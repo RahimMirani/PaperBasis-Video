@@ -10,8 +10,8 @@ export const StuckIn1993: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Year counter animation - counting from 1993 to 2025
-  const counterProgress = interpolate(frame, [20, 80], [0, 1], {
+  // Year counter animation - counting from 1993 to 2026
+  const counterProgress = interpolate(frame, [15, 70], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -19,44 +19,37 @@ export const StuckIn1993: React.FC = () => {
 
   // Main text animations
   const line1Progress = spring({
-    frame: frame - 10,
-    fps,
-    config: { damping: 12, stiffness: 80 },
-  });
-
-  const line2Progress = spring({
-    frame: frame - 30,
+    frame: frame - 5,
     fps,
     config: { damping: 12, stiffness: 80 },
   });
 
   const yearProgress = spring({
-    frame: frame - 15,
+    frame: frame - 10,
     fps,
-    config: { damping: 10, stiffness: 60 },
+    config: { damping: 8, stiffness: 50 },
   });
 
-  // Glitch effect on year
-  const glitchOffset = frame > 70 && frame < 85
-    ? Math.sin(frame * 2) * 5
-    : 0;
-
-  // Old paper visual elements
-  const paperProgress = spring({
-    frame: frame - 40,
+  const line2Progress = spring({
+    frame: frame - 75,
     fps,
-    config: { damping: 15, stiffness: 80 },
+    config: { damping: 12, stiffness: 80 },
   });
-  const paperOpacity = interpolate(paperProgress, [0, 1], [0, 1]);
-  const paperScale = interpolate(paperProgress, [0, 1], [0.8, 1]);
+
+  // Glitch effect on year when it reaches 2026
+  const isGlitching = frame > 65 && frame < 80;
+  const glitchOffset = isGlitching ? Math.sin(frame * 3) * 8 : 0;
+
+  // Pulsing glow when year stops
+  const glowPulse = frame > 70 ? Math.sin((frame - 70) * 0.15) * 0.3 + 0.7 : 0;
 
   // Exit animation
-  const exitStart = 85;
-  const exitOpacity = interpolate(frame, [exitStart, 105], [1, 0], {
+  const exitStart = 95;
+  const exitOpacity = interpolate(frame, [exitStart, 120], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const exitScale = interpolate(frame, [exitStart, 105], [1, 0.95], {
+  const exitScale = interpolate(frame, [exitStart, 120], [1, 1.1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -64,7 +57,7 @@ export const StuckIn1993: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: "#1a1a1a",
+        backgroundColor: "#0a0a0a",
         justifyContent: "center",
         alignItems: "center",
         opacity: exitOpacity,
@@ -80,22 +73,22 @@ export const StuckIn1993: React.FC = () => {
           backgroundImage: `repeating-linear-gradient(
             0deg,
             transparent,
-            transparent 2px,
-            rgba(0,0,0,0.1) 2px,
-            rgba(0,0,0,0.1) 4px
+            transparent 3px,
+            rgba(0,0,0,0.15) 3px,
+            rgba(0,0,0,0.15) 6px
           )`,
           pointerEvents: "none",
-          opacity: 0.5,
+          opacity: 0.4,
         }}
       />
 
-      {/* Vignette effect */}
+      {/* Vignette */}
       <div
         style={{
           position: "absolute",
           width: "100%",
           height: "100%",
-          background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%)",
+          background: "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%)",
           pointerEvents: "none",
         }}
       />
@@ -105,97 +98,102 @@ export const StuckIn1993: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 40,
+          gap: 50,
         }}
       >
         {/* Small label */}
         <div
           style={{
             opacity: interpolate(line1Progress, [0, 1], [0, 1]),
-            transform: `translateY(${interpolate(line1Progress, [0, 1], [30, 0])}px)`,
+            transform: `translateY(${interpolate(line1Progress, [0, 1], [40, 0])}px)`,
           }}
         >
           <span
             style={{
-              fontSize: 32,
+              fontSize: 42,
               fontWeight: 500,
-              color: "#737373",
-              letterSpacing: "0.2em",
+              color: "#525252",
+              letterSpacing: "0.25em",
               textTransform: "uppercase",
             }}
           >
-            Research papers since
+            Reading research papers since
           </span>
         </div>
 
-        {/* Big year with retro styling */}
+        {/* BIG year counter */}
         <div
           style={{
             position: "relative",
             opacity: interpolate(yearProgress, [0, 1], [0, 1]),
-            transform: `translateX(${glitchOffset}px) scale(${interpolate(yearProgress, [0, 1], [0.5, 1])})`,
+            transform: `translateX(${glitchOffset}px) scale(${interpolate(yearProgress, [0, 1], [0.6, 1])})`,
           }}
         >
-          {/* Glitch layers */}
+          {/* Glitch color layers */}
+          {isGlitching && (
+            <>
+              <span
+                style={{
+                  position: "absolute",
+                  fontSize: 380,
+                  fontWeight: 900,
+                  color: "#ef4444",
+                  opacity: 0.7,
+                  transform: "translateX(-12px)",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {currentYear}
+              </span>
+              <span
+                style={{
+                  position: "absolute",
+                  fontSize: 380,
+                  fontWeight: 900,
+                  color: "#22c55e",
+                  opacity: 0.7,
+                  transform: "translateX(12px)",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {currentYear}
+              </span>
+            </>
+          )}
           <span
             style={{
-              position: "absolute",
-              fontSize: 280,
-              fontWeight: 800,
-              color: "#ef4444",
-              opacity: frame > 70 && frame < 85 ? 0.5 : 0,
-              transform: "translateX(-8px)",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {currentYear}
-          </span>
-          <span
-            style={{
-              position: "absolute",
-              fontSize: 280,
-              fontWeight: 800,
-              color: "#22c55e",
-              opacity: frame > 70 && frame < 85 ? 0.5 : 0,
-              transform: "translateX(8px)",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {currentYear}
-          </span>
-          <span
-            style={{
-              fontSize: 280,
-              fontWeight: 800,
+              fontSize: 380,
+              fontWeight: 900,
               color: "#ffffff",
               letterSpacing: "-0.02em",
-              position: "relative",
+              textShadow: glowPulse > 0 ? `0 0 ${glowPulse * 60}px rgba(245,158,11,0.5)` : "none",
             }}
           >
             {currentYear}
           </span>
         </div>
 
-        {/* Tagline */}
+        {/* Bottom tagline */}
         <div
           style={{
             opacity: interpolate(line2Progress, [0, 1], [0, 1]),
-            transform: `translateY(${interpolate(line2Progress, [0, 1], [30, 0])}px)`,
+            transform: `translateY(${interpolate(line2Progress, [0, 1], [40, 0])}px)`,
             display: "flex",
             alignItems: "center",
-            gap: 20,
+            gap: 30,
           }}
         >
           <div
             style={{
-              width: 60,
-              height: 3,
+              width: 80,
+              height: 4,
               backgroundColor: "#f59e0b",
+              borderRadius: 2,
             }}
           />
           <span
             style={{
-              fontSize: 48,
+              fontSize: 56,
               fontWeight: 500,
               color: "#a3a3a3",
             }}
@@ -204,54 +202,12 @@ export const StuckIn1993: React.FC = () => {
           </span>
           <div
             style={{
-              width: 60,
-              height: 3,
+              width: 80,
+              height: 4,
               backgroundColor: "#f59e0b",
+              borderRadius: 2,
             }}
           />
-        </div>
-
-        {/* Old paper mockup */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 200,
-            display: "flex",
-            gap: 40,
-            opacity: paperOpacity,
-            transform: `scale(${paperScale})`,
-          }}
-        >
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              style={{
-                width: 200,
-                height: 280,
-                backgroundColor: "#f5f5dc",
-                borderRadius: 4,
-                boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
-                padding: 20,
-                transform: `rotate(${(i - 1) * 5}deg)`,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-              }}
-            >
-              {/* Fake text lines */}
-              {Array.from({ length: 12 }).map((_, j) => (
-                <div
-                  key={j}
-                  style={{
-                    height: 8,
-                    backgroundColor: "#d4d4d4",
-                    borderRadius: 2,
-                    width: j === 0 ? "60%" : j === 11 ? "40%" : "100%",
-                  }}
-                />
-              ))}
-            </div>
-          ))}
         </div>
       </div>
     </AbsoluteFill>

@@ -21,28 +21,28 @@ const DensePapers: React.FC<{ startFrame: number }> = ({ startFrame }) => {
   });
 
   const textOpacity = interpolate(textProgress, [0, 1], [0, 1]);
-  const textY = interpolate(textProgress, [0, 1], [60, 0]);
+  const textY = interpolate(textProgress, [0, 1], [80, 0]);
 
   // Create overwhelming lines of "text" that pile up - BIGGER
-  const linesCount = Math.min(Math.floor(localFrame * 1.2), 30);
+  const linesCount = Math.min(Math.floor(localFrame * 1.5), 28);
   const lines = Array.from({ length: linesCount }, (_, i) => {
     const lineProgress = spring({
-      frame: localFrame - i * 1.5,
+      frame: localFrame - i * 1.2,
       fps,
       config: { damping: 20, stiffness: 150 },
     });
-    const lineOpacity = interpolate(lineProgress, [0, 1], [0, 0.7]);
-    const lineWidth = 500 + (i % 5) * 120 + Math.sin(i * 1.5) * 150;
-    const xOffset = Math.sin(i * 0.8) * 40;
+    const lineOpacity = interpolate(lineProgress, [0, 1], [0, 0.75]);
+    const lineWidth = 600 + (i % 5) * 140 + Math.sin(i * 1.5) * 180;
+    const xOffset = Math.sin(i * 0.8) * 50;
 
     return (
       <div
         key={i}
         style={{
-          height: 18,
+          height: 22,
           width: lineWidth,
           backgroundColor: "#9ca3af",
-          borderRadius: 9,
+          borderRadius: 11,
           opacity: lineOpacity,
           transform: `translateX(${xOffset}px)`,
         }}
@@ -51,7 +51,7 @@ const DensePapers: React.FC<{ startFrame: number }> = ({ startFrame }) => {
   });
 
   // Exit fade
-  const exitOpacity = interpolate(localFrame, [32, 40], [1, 0], {
+  const exitOpacity = interpolate(localFrame, [35, 43], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -70,7 +70,7 @@ const DensePapers: React.FC<{ startFrame: number }> = ({ startFrame }) => {
         style={{
           display: "flex",
           alignItems: "center",
-          gap: 120,
+          gap: 100,
         }}
       >
         {/* Text */}
@@ -82,11 +82,11 @@ const DensePapers: React.FC<{ startFrame: number }> = ({ startFrame }) => {
         >
           <h1
             style={{
-              fontSize: 160,
+              fontSize: 200,
               fontWeight: 800,
               color: "#1a1a1a",
               letterSpacing: "-0.04em",
-              lineHeight: 1,
+              lineHeight: 0.95,
               margin: 0,
             }}
           >
@@ -96,12 +96,12 @@ const DensePapers: React.FC<{ startFrame: number }> = ({ startFrame }) => {
           </h1>
         </div>
 
-        {/* Visual: Wall of text lines - RIGHT NEXT TO TEXT */}
+        {/* Visual: Wall of text lines */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 16,
+            gap: 18,
             alignItems: "flex-start",
           }}
         >
@@ -127,13 +127,13 @@ const DeadEndCitations: React.FC<{ startFrame: number }> = ({ startFrame }) => {
   });
 
   const textOpacity = interpolate(textProgress, [0, 1], [0, 1]);
-  const textX = interpolate(textProgress, [0, 1], [-80, 0]);
+  const textX = interpolate(textProgress, [0, 1], [-100, 0]);
 
-  // Citation brackets that lead to nothing - BIGGER
+  // Citation brackets that lead to nothing
   const citations = ["[1]", "[2]", "[3]", "[4]", "[5]", "[6]"];
 
   // Exit fade
-  const exitOpacity = interpolate(localFrame, [32, 40], [1, 0], {
+  const exitOpacity = interpolate(localFrame, [35, 43], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -164,11 +164,11 @@ const DeadEndCitations: React.FC<{ startFrame: number }> = ({ startFrame }) => {
         >
           <h1
             style={{
-              fontSize: 160,
+              fontSize: 200,
               fontWeight: 800,
               color: "#1a1a1a",
               letterSpacing: "-0.04em",
-              lineHeight: 1,
+              lineHeight: 0.95,
               margin: 0,
             }}
           >
@@ -178,26 +178,26 @@ const DeadEndCitations: React.FC<{ startFrame: number }> = ({ startFrame }) => {
           </h1>
         </div>
 
-        {/* Visual: Citation brackets with broken lines - BIGGER */}
+        {/* Visual: Citation brackets with broken lines */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 32,
+            gap: 36,
           }}
         >
           {citations.map((citation, i) => {
             const citationProgress = spring({
-              frame: localFrame - 8 - i * 3,
+              frame: localFrame - 6 - i * 2.5,
               fps,
               config: { damping: 12, stiffness: 100 },
             });
             const citationOpacity = interpolate(citationProgress, [0, 1], [0, 1]);
-            const citationX = interpolate(citationProgress, [0, 1], [80, 0]);
+            const citationX = interpolate(citationProgress, [0, 1], [100, 0]);
 
             // Line that breaks/fades
-            const lineWidth = interpolate(citationProgress, [0, 0.5, 1], [0, 350, 180]);
-            const lineOpacity = interpolate(citationProgress, [0, 0.5, 1], [0, 1, 0.25]);
+            const lineWidth = interpolate(citationProgress, [0, 0.5, 1], [0, 400, 200]);
+            const lineOpacity = interpolate(citationProgress, [0, 0.5, 1], [0, 1, 0.2]);
 
             return (
               <div
@@ -205,14 +205,14 @@ const DeadEndCitations: React.FC<{ startFrame: number }> = ({ startFrame }) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 24,
+                  gap: 28,
                   opacity: citationOpacity,
                   transform: `translateX(${citationX}px)`,
                 }}
               >
                 <span
                   style={{
-                    fontSize: 64,
+                    fontSize: 72,
                     fontWeight: 700,
                     color: "#f97316",
                     fontFamily: "monospace",
@@ -224,19 +224,19 @@ const DeadEndCitations: React.FC<{ startFrame: number }> = ({ startFrame }) => {
                 <div
                   style={{
                     width: lineWidth,
-                    height: 6,
+                    height: 8,
                     background: `linear-gradient(90deg, #f97316 0%, #fdba74 50%, transparent 100%)`,
                     opacity: lineOpacity,
-                    borderRadius: 3,
+                    borderRadius: 4,
                   }}
                 />
                 {/* Dead end indicator */}
                 <div
                   style={{
-                    width: 24,
-                    height: 24,
+                    width: 28,
+                    height: 28,
                     borderRadius: "50%",
-                    border: "4px solid #d1d5db",
+                    border: "5px solid #d1d5db",
                     opacity: lineOpacity * 0.8,
                   }}
                 />
@@ -264,24 +264,23 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
   });
 
   const textOpacity = interpolate(textProgress, [0, 1], [0, 1]);
-  const textY = interpolate(textProgress, [0, 1], [60, 0]);
+  const textY = interpolate(textProgress, [0, 1], [80, 0]);
 
   // Terminal with just blinking cursor
-  const cursorBlink = Math.floor(localFrame / 12) % 2 === 0;
+  const cursorBlink = Math.floor(localFrame / 10) % 2 === 0;
 
-  // Code lines that are grayed out / impossible to reach
+  // Code lines
   const codeLines = [
     "def implement(paper):",
-    "    # How do I even start?",
+    "    # How do I start?",
     "    # Where's the code?",
     "    pass",
     "",
-    "# No implementation available",
-    "# Good luck figuring it out...",
+    "# No implementation",
   ];
 
   const terminalProgress = spring({
-    frame: localFrame - 10,
+    frame: localFrame - 8,
     fps,
     config: { damping: 12, stiffness: 60 },
   });
@@ -289,7 +288,7 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
   const terminalScale = interpolate(terminalProgress, [0, 1], [0.85, 1]);
 
   // Exit fade
-  const exitOpacity = interpolate(localFrame, [32, 40], [1, 0], {
+  const exitOpacity = interpolate(localFrame, [38, 46], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -320,11 +319,11 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
         >
           <h1
             style={{
-              fontSize: 160,
+              fontSize: 200,
               fontWeight: 800,
               color: "#1a1a1a",
               letterSpacing: "-0.04em",
-              lineHeight: 1,
+              lineHeight: 0.95,
               margin: 0,
             }}
           >
@@ -334,7 +333,7 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
           </h1>
         </div>
 
-        {/* Visual: Empty/grayed terminal - BIGGER */}
+        {/* Visual: Terminal */}
         <div
           style={{
             opacity: terminalOpacity,
@@ -344,45 +343,45 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
           <div
             style={{
               backgroundColor: "#1e293b",
-              borderRadius: 24,
+              borderRadius: 28,
               padding: 0,
-              width: 900,
-              boxShadow: "0 50px 100px rgba(0,0,0,0.3)",
+              width: 1000,
+              boxShadow: "0 60px 120px rgba(0,0,0,0.35)",
               overflow: "hidden",
             }}
           >
             {/* Terminal header */}
             <div
               style={{
-                height: 60,
+                height: 70,
                 backgroundColor: "#0f172a",
                 display: "flex",
                 alignItems: "center",
-                padding: "0 24px",
-                gap: 12,
+                padding: "0 28px",
+                gap: 14,
               }}
             >
-              <div style={{ width: 18, height: 18, borderRadius: "50%", backgroundColor: "#ef4444" }} />
-              <div style={{ width: 18, height: 18, borderRadius: "50%", backgroundColor: "#f59e0b" }} />
-              <div style={{ width: 18, height: 18, borderRadius: "50%", backgroundColor: "#22c55e" }} />
-              <span style={{ marginLeft: 20, color: "#64748b", fontSize: 22 }}>terminal</span>
+              <div style={{ width: 22, height: 22, borderRadius: "50%", backgroundColor: "#ef4444" }} />
+              <div style={{ width: 22, height: 22, borderRadius: "50%", backgroundColor: "#f59e0b" }} />
+              <div style={{ width: 22, height: 22, borderRadius: "50%", backgroundColor: "#22c55e" }} />
+              <span style={{ marginLeft: 24, color: "#64748b", fontSize: 26 }}>terminal</span>
             </div>
 
             {/* Terminal content */}
             <div
               style={{
-                padding: "35px 40px",
+                padding: "40px 48px",
                 fontFamily: "monospace",
-                fontSize: 30,
+                fontSize: 36,
               }}
             >
               {codeLines.map((line, i) => {
                 const lineProgress = spring({
-                  frame: localFrame - 12 - i * 3,
+                  frame: localFrame - 10 - i * 2.5,
                   fps,
                   config: { damping: 15, stiffness: 120 },
                 });
-                const lineOpacity = interpolate(lineProgress, [0, 1], [0, 0.5]);
+                const lineOpacity = interpolate(lineProgress, [0, 1], [0, 0.55]);
 
                 return (
                   <div
@@ -390,7 +389,7 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
                     style={{
                       color: line.startsWith("#") ? "#64748b" : "#94a3b8",
                       opacity: lineOpacity,
-                      height: 42,
+                      height: 50,
                     }}
                   >
                     {line}
@@ -403,17 +402,17 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  marginTop: 30,
+                  marginTop: 35,
                 }}
               >
-                <span style={{ color: "#64748b", fontSize: 30 }}>$</span>
+                <span style={{ color: "#64748b", fontSize: 36 }}>$</span>
                 <div
                   style={{
-                    width: 18,
-                    height: 36,
+                    width: 22,
+                    height: 44,
                     backgroundColor: cursorBlink ? "#eab308" : "transparent",
-                    marginLeft: 12,
-                    borderRadius: 2,
+                    marginLeft: 14,
+                    borderRadius: 3,
                   }}
                 />
               </div>
@@ -426,19 +425,19 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
 };
 
 export const ProblemStatement: React.FC = () => {
-  // Each problem gets ~40 frames (1.3 seconds)
-  // Total: 120 frames
+  // Each problem gets ~43 frames
+  // Total: 130 frames
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#fafafa" }}>
-      {/* Problem 1: Dense Papers (frames 0-40) */}
+      {/* Problem 1: Dense Papers (frames 0-43) */}
       <DensePapers startFrame={0} />
 
-      {/* Problem 2: Dead-end Citations (frames 40-80) */}
-      <DeadEndCitations startFrame={40} />
+      {/* Problem 2: Dead-end Citations (frames 43-86) */}
+      <DeadEndCitations startFrame={43} />
 
-      {/* Problem 3: No Implementation (frames 80-120) */}
-      <NoImplementation startFrame={80} />
+      {/* Problem 3: No Implementation (frames 86-130) */}
+      <NoImplementation startFrame={86} />
     </AbsoluteFill>
   );
 };

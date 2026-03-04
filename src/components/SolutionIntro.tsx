@@ -14,7 +14,7 @@ export const SolutionIntro: React.FC = () => {
   const { fps } = useVideoConfig();
 
   // Background pulse
-  const bgPulse = Math.sin(frame * 0.03) * 0.1 + 1;
+  const bgPulse = Math.sin(frame * 0.03) * 0.08 + 1;
 
   // Main text animations
   const line1Progress = spring({
@@ -30,10 +30,10 @@ export const SolutionIntro: React.FC = () => {
   });
 
   const line1Opacity = interpolate(line1Progress, [0, 1], [0, 1]);
-  const line1Y = interpolate(line1Progress, [0, 1], [60, 0]);
+  const line1Y = interpolate(line1Progress, [0, 1], [80, 0]);
 
   const line2Opacity = interpolate(line2Progress, [0, 1], [0, 1]);
-  const line2Y = interpolate(line2Progress, [0, 1], [60, 0]);
+  const line2Y = interpolate(line2Progress, [0, 1], [80, 0]);
 
   // Dashboard preview floating in background
   const dashboardProgress = spring({
@@ -41,13 +41,13 @@ export const SolutionIntro: React.FC = () => {
     fps,
     config: { damping: 15, stiffness: 50 },
   });
-  const dashboardOpacity = interpolate(dashboardProgress, [0, 1], [0, 0.25]);
-  const dashboardScale = interpolate(dashboardProgress, [0, 1], [0.8, 1]);
-  const dashboardY = Math.sin(frame * 0.02) * 15;
+  const dashboardOpacity = interpolate(dashboardProgress, [0, 1], [0, 0.2]);
+  const dashboardScale = interpolate(dashboardProgress, [0, 1], [0.85, 1]);
+  const dashboardY = Math.sin(frame * 0.02) * 12;
 
   // Accent elements
   const accentProgress = spring({
-    frame: frame - 50,
+    frame: frame - 55,
     fps,
     config: { damping: 20, stiffness: 100 },
   });
@@ -55,10 +55,10 @@ export const SolutionIntro: React.FC = () => {
   // Colorful dots
   const dots = [
     { color: "#f59e0b", delay: 0 },
-    { color: "#10b981", delay: 4 },
-    { color: "#f97316", delay: 8 },
-    { color: "#ec4899", delay: 12 },
-    { color: "#8b5cf6", delay: 16 },
+    { color: "#10b981", delay: 3 },
+    { color: "#f97316", delay: 6 },
+    { color: "#ec4899", delay: 9 },
+    { color: "#8b5cf6", delay: 12 },
   ];
 
   // Exit animation
@@ -67,7 +67,7 @@ export const SolutionIntro: React.FC = () => {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const exitScale = interpolate(frame, [exitStart, 120], [1, 1.1], {
+  const exitScale = interpolate(frame, [exitStart, 120], [1, 1.08], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -99,16 +99,16 @@ export const SolutionIntro: React.FC = () => {
         <div
           style={{
             position: "relative",
-            transform: "perspective(2000px) rotateX(10deg) rotateY(-5deg)",
+            transform: "perspective(2000px) rotateX(8deg) rotateY(-4deg)",
           }}
         >
           <Img
             src={staticFile("dashboard-code.png")}
             style={{
-              width: 2200,
+              width: 2400,
               height: "auto",
               borderRadius: 24,
-              filter: "blur(2px)",
+              filter: "blur(3px)",
             }}
           />
           {/* Gradient overlay */}
@@ -119,7 +119,7 @@ export const SolutionIntro: React.FC = () => {
               left: 0,
               right: 0,
               bottom: 0,
-              background: "radial-gradient(ellipse at center, transparent 20%, #0f0f0f 80%)",
+              background: "radial-gradient(ellipse at center, transparent 15%, #0f0f0f 75%)",
             }}
           />
         </div>
@@ -130,7 +130,7 @@ export const SolutionIntro: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 30,
+          gap: 35,
           opacity: exitOpacity,
           transform: `scale(${exitScale})`,
           position: "relative",
@@ -138,7 +138,7 @@ export const SolutionIntro: React.FC = () => {
         }}
       >
         {/* Colorful dots row */}
-        <div style={{ display: "flex", gap: 20, marginBottom: 30 }}>
+        <div style={{ display: "flex", gap: 24, marginBottom: 40 }}>
           {dots.map((dot, i) => {
             const dotProgress = spring({
               frame: frame - 5 - dot.delay,
@@ -146,25 +146,25 @@ export const SolutionIntro: React.FC = () => {
               config: { damping: 8, stiffness: 150 },
             });
             const dotScale = interpolate(dotProgress, [0, 1], [0, 1]);
-            const dotY = interpolate(dotProgress, [0, 0.5, 1], [0, -20, 0]);
+            const dotY = interpolate(dotProgress, [0, 0.5, 1], [0, -25, 0]);
 
             return (
               <div
                 key={i}
                 style={{
-                  width: 20,
-                  height: 20,
+                  width: 24,
+                  height: 24,
                   borderRadius: "50%",
                   backgroundColor: dot.color,
                   transform: `scale(${dotScale}) translateY(${dotY}px)`,
-                  boxShadow: `0 0 30px ${dot.color}80`,
+                  boxShadow: `0 0 35px ${dot.color}80`,
                 }}
               />
             );
           })}
         </div>
 
-        {/* Line 1 */}
+        {/* Line 1 - BIGGER */}
         <div
           style={{
             opacity: line1Opacity,
@@ -173,7 +173,7 @@ export const SolutionIntro: React.FC = () => {
         >
           <span
             style={{
-              fontSize: 140,
+              fontSize: 180,
               fontWeight: 700,
               color: "#ffffff",
               letterSpacing: "-0.03em",
@@ -183,7 +183,7 @@ export const SolutionIntro: React.FC = () => {
           </span>
         </div>
 
-        {/* Line 2 - Gradient text */}
+        {/* Line 2 - Gradient text - BIGGER */}
         <div
           style={{
             opacity: line2Opacity,
@@ -192,7 +192,7 @@ export const SolutionIntro: React.FC = () => {
         >
           <span
             style={{
-              fontSize: 140,
+              fontSize: 180,
               fontWeight: 400,
               fontStyle: "italic",
               background: "linear-gradient(135deg, #f59e0b 0%, #10b981 40%, #f97316 70%, #ec4899 100%)",
@@ -208,11 +208,11 @@ export const SolutionIntro: React.FC = () => {
         {/* Animated underline */}
         <div
           style={{
-            width: interpolate(accentProgress, [0, 1], [0, 700]),
-            height: 6,
+            width: interpolate(accentProgress, [0, 1], [0, 800]),
+            height: 7,
             background: "linear-gradient(90deg, #f59e0b, #10b981, #f97316, #ec4899)",
-            borderRadius: 3,
-            marginTop: 20,
+            borderRadius: 4,
+            marginTop: 25,
           }}
         />
 
@@ -220,10 +220,10 @@ export const SolutionIntro: React.FC = () => {
         <div
           style={{
             display: "flex",
-            gap: 24,
-            marginTop: 50,
+            gap: 28,
+            marginTop: 55,
             opacity: interpolate(accentProgress, [0, 1], [0, 1]),
-            transform: `translateY(${interpolate(accentProgress, [0, 1], [30, 0])}px)`,
+            transform: `translateY(${interpolate(accentProgress, [0, 1], [35, 0])}px)`,
           }}
         >
           {[
@@ -236,12 +236,12 @@ export const SolutionIntro: React.FC = () => {
               style={{
                 backgroundColor: "rgba(255,255,255,0.1)",
                 border: "1px solid rgba(255,255,255,0.2)",
-                padding: "16px 32px",
-                borderRadius: 50,
+                padding: "20px 40px",
+                borderRadius: 60,
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
-                fontSize: 26,
+                gap: 14,
+                fontSize: 32,
                 color: "#ffffff",
                 fontWeight: 500,
               }}
