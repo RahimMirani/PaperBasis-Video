@@ -7,50 +7,51 @@ import {
   useVideoConfig,
   staticFile,
 } from "remotion";
+import { GradientOrbs, FloatingShapes } from "./MotionGraphics";
 
 export const ProductReveal: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Main product screenshot - dramatic scale up reveal
+  // Dramatic zoom reveal
   const revealProgress = spring({
     frame: frame - 5,
     fps,
-    config: { damping: 15, stiffness: 50 },
+    config: { damping: 12, stiffness: 40 },
   });
 
-  const scale = interpolate(revealProgress, [0, 1], [0.7, 1]);
+  const scale = interpolate(revealProgress, [0, 1], [0.5, 1]);
   const opacity = interpolate(revealProgress, [0, 1], [0, 1]);
-  const y = interpolate(revealProgress, [0, 1], [100, 0]);
+  const rotateX = interpolate(revealProgress, [0, 1], [20, 0]);
 
-  // Parallax layers for depth
-  const parallaxSlow = Math.sin(frame * 0.03) * 5;
-  const parallaxFast = Math.sin(frame * 0.05) * 10;
+  // Floating elements
+  const float1 = Math.sin(frame * 0.04) * 15;
+  const float2 = Math.cos(frame * 0.03) * 12;
 
-  // Background gradient animation
-  const gradientRotation = frame * 0.5;
-
-  // Floating UI elements around the main screenshot
-  const floatProgress = spring({
+  // Stats/badges appearing
+  const badge1Progress = spring({
     frame: frame - 40,
     fps,
-    config: { damping: 12, stiffness: 60 },
+    config: { damping: 12, stiffness: 80 },
   });
-  const floatOpacity = interpolate(floatProgress, [0, 1], [0, 1]);
-  const floatScale = interpolate(floatProgress, [0, 1], [0.8, 1]);
-
-  // Glow intensity
-  const glowIntensity = interpolate(frame, [0, 60], [0, 1], {
-    extrapolateRight: "clamp",
+  const badge2Progress = spring({
+    frame: frame - 55,
+    fps,
+    config: { damping: 12, stiffness: 80 },
+  });
+  const badge3Progress = spring({
+    frame: frame - 70,
+    fps,
+    config: { damping: 12, stiffness: 80 },
   });
 
   // Exit animation
-  const exitStart = 100;
+  const exitStart = 95;
   const exitOpacity = interpolate(frame, [exitStart, 120], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const exitScale = interpolate(frame, [exitStart, 120], [1, 1.1], {
+  const exitScale = interpolate(frame, [exitStart, 120], [1, 1.15], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -64,47 +65,33 @@ export const ProductReveal: React.FC = () => {
         overflow: "hidden",
       }}
     >
-      {/* Animated background gradient */}
-      <div
-        style={{
-          position: "absolute",
-          width: "150%",
-          height: "150%",
-          background: `conic-gradient(from ${gradientRotation}deg at 50% 50%,
-            rgba(245, 158, 11, 0.05) 0deg,
-            rgba(16, 185, 129, 0.05) 120deg,
-            rgba(99, 102, 241, 0.05) 240deg,
-            rgba(245, 158, 11, 0.05) 360deg)`,
-          opacity: glowIntensity * 0.5,
-        }}
-      />
+      <GradientOrbs />
+      <FloatingShapes colors={["#fef3c7", "#d1fae5", "#ffedd5", "#fce7f3"]} count={10} speed={0.4} />
 
-      {/* Main content container with exit animation */}
       <div
         style={{
           opacity: exitOpacity,
           transform: `scale(${exitScale})`,
         }}
       >
-        {/* Main screenshot with browser frame */}
+        {/* Main screenshot with perspective */}
         <div
           style={{
-            transform: `translateY(${y + parallaxSlow}px) scale(${scale})`,
+            transform: `scale(${scale}) perspective(2000px) rotateX(${rotateX}deg)`,
             opacity,
+            position: "relative",
           }}
         >
-          {/* Large glow behind */}
+          {/* Large glow */}
           <div
             style={{
               position: "absolute",
-              width: "140%",
-              height: "140%",
-              left: "-20%",
-              top: "-20%",
-              background:
-                "radial-gradient(ellipse, rgba(0,0,0,0.08) 0%, transparent 60%)",
-              opacity: glowIntensity,
-              zIndex: -1,
+              width: "130%",
+              height: "130%",
+              left: "-15%",
+              top: "-15%",
+              background: "radial-gradient(ellipse, rgba(245,158,11,0.15) 0%, rgba(16,185,129,0.1) 40%, transparent 70%)",
+              filter: "blur(60px)",
             }}
           />
 
@@ -114,14 +101,14 @@ export const ProductReveal: React.FC = () => {
               backgroundColor: "#ffffff",
               borderRadius: 32,
               boxShadow: `
-                0 60px 120px -30px rgba(0,0,0,0.2),
-                0 40px 80px -40px rgba(0,0,0,0.15),
+                0 100px 200px -50px rgba(0,0,0,0.25),
+                0 50px 100px -50px rgba(0,0,0,0.15),
                 0 0 0 1px rgba(0,0,0,0.05)
               `,
               overflow: "hidden",
             }}
           >
-            {/* Browser top bar */}
+            {/* Browser bar */}
             <div
               style={{
                 height: 64,
@@ -133,108 +120,122 @@ export const ProductReveal: React.FC = () => {
                 gap: 12,
               }}
             >
-              <div
-                style={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: "50%",
-                  backgroundColor: "#ef4444",
-                }}
-              />
-              <div
-                style={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: "50%",
-                  backgroundColor: "#f59e0b",
-                }}
-              />
-              <div
-                style={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: "50%",
-                  backgroundColor: "#22c55e",
-                }}
-              />
-              {/* URL bar */}
+              <div style={{ width: 16, height: 16, borderRadius: "50%", backgroundColor: "#ef4444" }} />
+              <div style={{ width: 16, height: 16, borderRadius: "50%", backgroundColor: "#f59e0b" }} />
+              <div style={{ width: 16, height: 16, borderRadius: "50%", backgroundColor: "#22c55e" }} />
               <div
                 style={{
                   marginLeft: 40,
                   backgroundColor: "#f1f5f9",
-                  borderRadius: 8,
-                  padding: "10px 24px",
+                  borderRadius: 10,
+                  padding: "12px 28px",
+                  color: "#1a1a1a",
                   fontSize: 22,
-                  color: "#64748b",
                   fontWeight: 500,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
                 }}
               >
+                <span style={{ color: "#22c55e" }}>🔒</span>
                 paperbasis.com
               </div>
             </div>
 
-            {/* Landing page screenshot */}
             <Img
               src={staticFile("landing.png")}
               style={{
-                width: 2800,
+                width: 2600,
                 height: "auto",
                 display: "block",
               }}
             />
           </div>
-        </div>
 
-        {/* Floating accent elements */}
-        <div
-          style={{
-            position: "absolute",
-            top: 150,
-            right: 200,
-            opacity: floatOpacity,
-            transform: `scale(${floatScale}) translateY(${parallaxFast}px)`,
-          }}
-        >
+          {/* Floating badges around the screenshot */}
           <div
             style={{
-              backgroundColor: "#ffffff",
-              padding: "20px 32px",
-              borderRadius: 16,
-              boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-              fontSize: 28,
-              fontWeight: 600,
-              color: "#1a1a1a",
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
+              position: "absolute",
+              top: 180,
+              left: -120,
+              transform: `translateY(${float1}px) scale(${interpolate(badge1Progress, [0, 1], [0, 1])})`,
+              opacity: interpolate(badge1Progress, [0, 1], [0, 1]),
             }}
           >
-            <span style={{ color: "#22c55e" }}>●</span>
-            AI-Powered
+            <div
+              style={{
+                backgroundColor: "#ffffff",
+                padding: "20px 32px",
+                borderRadius: 20,
+                boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                fontSize: 28,
+                fontWeight: 600,
+              }}
+            >
+              <span style={{ fontSize: 36 }}>📄</span>
+              <div>
+                <div style={{ color: "#1a1a1a" }}>Upload any paper</div>
+                <div style={{ color: "#64748b", fontSize: 22, fontWeight: 400 }}>PDF supported</div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div
-          style={{
-            position: "absolute",
-            bottom: 200,
-            left: 150,
-            opacity: floatOpacity,
-            transform: `scale(${floatScale}) translateY(${-parallaxFast}px)`,
-          }}
-        >
           <div
             style={{
-              backgroundColor: "#1e293b",
-              padding: "20px 32px",
-              borderRadius: 16,
-              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
-              fontSize: 28,
-              fontWeight: 600,
-              color: "#ffffff",
+              position: "absolute",
+              top: 400,
+              right: -100,
+              transform: `translateY(${float2}px) scale(${interpolate(badge2Progress, [0, 1], [0, 1])})`,
+              opacity: interpolate(badge2Progress, [0, 1], [0, 1]),
             }}
           >
-            Start Free →
+            <div
+              style={{
+                backgroundColor: "#1e293b",
+                color: "#ffffff",
+                padding: "20px 32px",
+                borderRadius: 20,
+                boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                fontSize: 28,
+                fontWeight: 600,
+              }}
+            >
+              <span style={{ color: "#10b981", fontSize: 36 }}>⚡</span>
+              <div>
+                <div>AI-Powered</div>
+                <div style={{ color: "#94a3b8", fontSize: 22, fontWeight: 400 }}>Instant insights</div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              position: "absolute",
+              bottom: 100,
+              left: 200,
+              transform: `translateY(${-float1}px) scale(${interpolate(badge3Progress, [0, 1], [0, 1])})`,
+              opacity: interpolate(badge3Progress, [0, 1], [0, 1]),
+            }}
+          >
+            <div
+              style={{
+                background: "linear-gradient(135deg, #f59e0b, #f97316)",
+                color: "#ffffff",
+                padding: "20px 40px",
+                borderRadius: 50,
+                boxShadow: "0 20px 60px rgba(245,158,11,0.4)",
+                fontSize: 28,
+                fontWeight: 700,
+              }}
+            >
+              Start Free →
+            </div>
           </div>
         </div>
       </div>

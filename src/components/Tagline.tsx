@@ -7,79 +7,71 @@ import {
   useVideoConfig,
   staticFile,
 } from "remotion";
+import { GradientOrbs, ParticleBurst } from "./MotionGraphics";
 
 export const Tagline: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Logo icon animation
+  // Icon drop with bounce
   const iconProgress = spring({
     frame: frame - 5,
     fps,
-    config: { damping: 12, stiffness: 100 },
+    config: { damping: 8, stiffness: 100 },
   });
-  const iconScale = interpolate(iconProgress, [0, 1], [0, 1]);
+  const iconY = interpolate(iconProgress, [0, 1], [-200, 0]);
+  const iconScale = interpolate(iconProgress, [0, 1], [0.5, 1]);
   const iconRotation = interpolate(iconProgress, [0, 1], [-30, 0]);
 
-  // Main tagline animation - word by word
-  const word1Progress = spring({
-    frame: frame - 20,
-    fps,
-    config: { damping: 15, stiffness: 80 },
-  });
-  const word2Progress = spring({
-    frame: frame - 28,
-    fps,
-    config: { damping: 15, stiffness: 80 },
-  });
-  const word3Progress = spring({
-    frame: frame - 36,
-    fps,
-    config: { damping: 15, stiffness: 80 },
-  });
+  // Words appearing with energy
+  const word1 = spring({ frame: frame - 20, fps, config: { damping: 10, stiffness: 80 } });
+  const word2 = spring({ frame: frame - 30, fps, config: { damping: 10, stiffness: 80 } });
+  const word3 = spring({ frame: frame - 40, fps, config: { damping: 10, stiffness: 80 } });
 
-  // URL animation
-  const urlProgress = spring({
+  // Underline animation
+  const underlineProgress = spring({
     frame: frame - 50,
+    fps,
+    config: { damping: 15, stiffness: 80 },
+  });
+  const underlineWidth = interpolate(underlineProgress, [0, 1], [0, 100]);
+
+  // URL fade in
+  const urlProgress = spring({
+    frame: frame - 60,
     fps,
     config: { damping: 15, stiffness: 100 },
   });
   const urlOpacity = interpolate(urlProgress, [0, 1], [0, 1]);
   const urlY = interpolate(urlProgress, [0, 1], [30, 0]);
 
-  // Subtle pulsing glow
-  const glowPulse = Math.sin(frame * 0.1) * 0.3 + 0.7;
-
-  // Underline animation for "understood"
-  const underlineProgress = spring({
-    frame: frame - 45,
-    fps,
-    config: { damping: 20, stiffness: 100 },
-  });
-  const underlineWidth = interpolate(underlineProgress, [0, 1], [0, 100]);
+  // Pulsing glow
+  const glowPulse = 0.6 + Math.sin(frame * 0.1) * 0.2;
 
   const words = [
-    { text: "Research,", progress: word1Progress, italic: false },
-    { text: "finally", progress: word2Progress, italic: true },
-    { text: "understood.", progress: word3Progress, italic: false, underline: true },
+    { text: "Research,", progress: word1, gradient: false },
+    { text: "finally", progress: word2, gradient: true, italic: true },
+    { text: "understood.", progress: word3, gradient: false, underline: true },
   ];
 
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: "#FFFBF5",
+        backgroundColor: "#0f0f0f",
         justifyContent: "center",
         alignItems: "center",
       }}
     >
-      {/* Radial glow background */}
+      <GradientOrbs dark />
+      <ParticleBurst startFrame={15} x={1920} y={900} color="#f59e0b" />
+
+      {/* Radial glow */}
       <div
         style={{
           position: "absolute",
           width: "100%",
           height: "100%",
-          background:
-            "radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.08) 0%, transparent 50%)",
+          background: "radial-gradient(circle at 50% 50%, rgba(245,158,11,0.15) 0%, transparent 50%)",
           opacity: glowPulse,
         }}
       />
@@ -89,20 +81,35 @@ export const Tagline: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 60,
+          gap: 50,
         }}
       >
         {/* Logo icon */}
         <div
           style={{
-            transform: `scale(${iconScale}) rotate(${iconRotation}deg)`,
+            transform: `translateY(${iconY}px) scale(${iconScale}) rotate(${iconRotation}deg)`,
+            position: "relative",
           }}
         >
+          {/* Glow behind icon */}
+          <div
+            style={{
+              position: "absolute",
+              width: 200,
+              height: 200,
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "radial-gradient(circle, rgba(245,158,11,0.5) 0%, transparent 60%)",
+              filter: "blur(30px)",
+            }}
+          />
           <Img
             src={staticFile("PaperBasis-Icon.png")}
             style={{
-              width: 120,
+              width: 140,
               height: "auto",
+              filter: "brightness(0) invert(1)",
             }}
           />
         </div>
@@ -116,9 +123,9 @@ export const Tagline: React.FC = () => {
           }}
         >
           {words.map((word, index) => {
-            const y = interpolate(word.progress, [0, 1], [60, 0]);
+            const y = interpolate(word.progress, [0, 1], [80, 0]);
             const opacity = interpolate(word.progress, [0, 1], [0, 1]);
-            const scale = interpolate(word.progress, [0, 1], [0.9, 1]);
+            const scale = interpolate(word.progress, [0, 1], [0.8, 1]);
 
             return (
               <div
@@ -131,10 +138,15 @@ export const Tagline: React.FC = () => {
               >
                 <span
                   style={{
-                    fontSize: 120,
-                    fontWeight: word.italic ? 400 : 600,
+                    fontSize: 130,
+                    fontWeight: word.italic ? 400 : 700,
                     fontStyle: word.italic ? "italic" : "normal",
-                    color: "#1a1a1a",
+                    color: word.gradient ? undefined : "#ffffff",
+                    background: word.gradient
+                      ? "linear-gradient(135deg, #f59e0b 0%, #10b981 50%, #f97316 100%)"
+                      : undefined,
+                    WebkitBackgroundClip: word.gradient ? "text" : undefined,
+                    WebkitTextFillColor: word.gradient ? "transparent" : undefined,
                     letterSpacing: "-0.02em",
                   }}
                 >
@@ -144,12 +156,12 @@ export const Tagline: React.FC = () => {
                   <div
                     style={{
                       position: "absolute",
-                      bottom: 8,
+                      bottom: 12,
                       left: 0,
-                      height: 8,
+                      height: 10,
                       width: `${underlineWidth}%`,
-                      backgroundColor: "#f59e0b",
-                      borderRadius: 4,
+                      background: "linear-gradient(90deg, #f59e0b, #10b981)",
+                      borderRadius: 5,
                     }}
                   />
                 )}
@@ -163,14 +175,26 @@ export const Tagline: React.FC = () => {
           style={{
             opacity: urlOpacity,
             transform: `translateY(${urlY}px)`,
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
           }}
         >
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              backgroundColor: "#10b981",
+              boxShadow: "0 0 20px #10b981",
+            }}
+          />
           <span
             style={{
-              fontSize: 42,
+              fontSize: 48,
               fontWeight: 500,
-              color: "#64748b",
-              letterSpacing: "0.05em",
+              color: "#94a3b8",
+              letterSpacing: "0.02em",
             }}
           >
             paperbasis.com

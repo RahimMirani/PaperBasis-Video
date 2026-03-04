@@ -7,3 +7,10 @@ export { FeatureCode } from "./FeatureCode";
 export { ProductReveal } from "./ProductReveal";
 export { Tagline } from "./Tagline";
 export { Transition, CrossFade } from "./Transition";
+export {
+  FloatingShapes,
+  GradientOrbs,
+  AnimatedLines,
+  ParticleBurst,
+  GridPattern,
+} from "./MotionGraphics";

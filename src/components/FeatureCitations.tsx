@@ -7,62 +7,58 @@ import {
   useVideoConfig,
   staticFile,
 } from "remotion";
+import { GradientOrbs, FloatingShapes } from "./MotionGraphics";
 
 export const FeatureCitations: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Feature label animation
-  const labelProgress = spring({
+  // Feature badge animation
+  const badgeProgress = spring({
     frame: frame - 5,
     fps,
-    config: { damping: 15, stiffness: 100 },
+    config: { damping: 12, stiffness: 100 },
   });
-  const labelOpacity = interpolate(labelProgress, [0, 1], [0, 1]);
-  const labelY = interpolate(labelProgress, [0, 1], [-30, 0]);
+  const badgeScale = interpolate(badgeProgress, [0, 1], [0, 1]);
+  const badgeRotation = interpolate(badgeProgress, [0, 1], [-10, 0]);
 
-  // Title animation
-  const titleProgress = spring({
+  // Main content slide in
+  const contentProgress = spring({
     frame: frame - 15,
-    fps,
-    config: { damping: 12, stiffness: 80 },
-  });
-  const titleOpacity = interpolate(titleProgress, [0, 1], [0, 1]);
-  const titleY = interpolate(titleProgress, [0, 1], [40, 0]);
-
-  // Screenshot animation - slides up with device frame
-  const screenProgress = spring({
-    frame: frame - 35,
     fps,
     config: { damping: 14, stiffness: 60 },
   });
-  const screenOpacity = interpolate(screenProgress, [0, 1], [0, 1]);
-  const screenY = interpolate(screenProgress, [0, 1], [150, 0]);
-  const screenScale = interpolate(screenProgress, [0, 1], [0.9, 1]);
+  const contentOpacity = interpolate(contentProgress, [0, 1], [0, 1]);
+  const contentY = interpolate(contentProgress, [0, 1], [100, 0]);
 
-  // Highlight pulse on the citation popup
-  const highlightStart = 80;
-  const highlightPulse = spring({
-    frame: frame - highlightStart,
+  // Screenshot with browser frame - dramatic entrance
+  const screenProgress = spring({
+    frame: frame - 25,
     fps,
-    config: { damping: 8, stiffness: 150 },
+    config: { damping: 12, stiffness: 50 },
   });
-  const highlightScale = frame > highlightStart
-    ? interpolate(highlightPulse, [0, 0.5, 1], [1, 1.02, 1])
+  const screenScale = interpolate(screenProgress, [0, 1], [0.7, 1]);
+  const screenOpacity = interpolate(screenProgress, [0, 1], [0, 1]);
+  const screenRotateY = interpolate(screenProgress, [0, 1], [15, 0]);
+
+  // Highlight effect on screenshot
+  const highlightFrame = frame - 80;
+  const highlightPulse = highlightFrame > 0
+    ? Math.sin(highlightFrame * 0.15) * 0.02 + 1
     : 1;
 
-  // Glow effect behind screenshot
-  const glowOpacity = interpolate(frame, [40, 70], [0, 0.3], {
-    extrapolateRight: "clamp",
+  // Floating annotations
+  const annotationProgress = spring({
+    frame: frame - 60,
+    fps,
+    config: { damping: 15, stiffness: 80 },
   });
+  const annotationOpacity = interpolate(annotationProgress, [0, 1], [0, 1]);
+  const annotationScale = interpolate(annotationProgress, [0, 1], [0.8, 1]);
 
-  // Exit animation
-  const exitStart = 160;
+  // Exit
+  const exitStart = 155;
   const exitOpacity = interpolate(frame, [exitStart, 180], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const exitY = interpolate(frame, [exitStart, 180], [0, -80], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -71,163 +67,188 @@ export const FeatureCitations: React.FC = () => {
     <AbsoluteFill
       style={{
         backgroundColor: "#FFFBF5",
-        justifyContent: "center",
-        alignItems: "center",
         opacity: exitOpacity,
-        transform: `translateY(${exitY}px)`,
       }}
     >
-      {/* Left side - Text content */}
+      <GradientOrbs />
+      <FloatingShapes colors={["#fef3c7", "#d1fae5", "#ffedd5"]} count={5} speed={0.3} />
+
+      {/* Main layout - side by side, tighter */}
       <div
         style={{
-          position: "absolute",
-          left: 180,
-          top: "50%",
-          transform: "translateY(-50%)",
-          maxWidth: 900,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          gap: 80,
+          padding: "0 120px",
         }}
       >
-        {/* Feature label */}
+        {/* Left - Text content */}
         <div
           style={{
-            opacity: labelOpacity,
-            transform: `translateY(${labelY}px)`,
-            marginBottom: 24,
+            flex: "0 0 auto",
+            maxWidth: 900,
+            opacity: contentOpacity,
+            transform: `translateY(${contentY}px)`,
           }}
         >
-          <span
+          {/* Feature badge */}
+          <div
             style={{
-              fontSize: 28,
-              fontWeight: 600,
-              color: "#f59e0b",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 12,
+              backgroundColor: "#fef3c7",
+              padding: "16px 28px",
+              borderRadius: 50,
+              marginBottom: 40,
+              transform: `scale(${badgeScale}) rotate(${badgeRotation}deg)`,
             }}
           >
-            Contextual Citations
-          </span>
-        </div>
+            <div
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: "50%",
+                backgroundColor: "#f59e0b",
+              }}
+            />
+            <span
+              style={{
+                fontSize: 24,
+                fontWeight: 600,
+                color: "#92400e",
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+              }}
+            >
+              Contextual Citations
+            </span>
+          </div>
 
-        {/* Main title */}
-        <div
-          style={{
-            opacity: titleOpacity,
-            transform: `translateY(${titleY}px)`,
-          }}
-        >
+          {/* Headline */}
           <h2
             style={{
-              fontSize: 80,
-              fontWeight: 600,
+              fontSize: 90,
+              fontWeight: 700,
               color: "#1a1a1a",
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
+              lineHeight: 1.05,
+              letterSpacing: "-0.03em",
               margin: 0,
             }}
           >
             Citations that
             <br />
-            <span style={{ fontStyle: "italic", fontWeight: 400 }}>
+            <span
+              style={{
+                background: "linear-gradient(135deg, #f59e0b, #f97316)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontStyle: "italic",
+                fontWeight: 500,
+              }}
+            >
               actually explain
             </span>
           </h2>
+
+          {/* Subtext */}
           <p
             style={{
-              fontSize: 32,
+              fontSize: 34,
               color: "#64748b",
-              marginTop: 32,
+              marginTop: 36,
               lineHeight: 1.5,
               maxWidth: 700,
             }}
           >
             Click any reference to see abstracts, key findings,
-            and why it matters — without leaving your paper.
+            and context — without leaving your paper.
           </p>
         </div>
-      </div>
 
-      {/* Right side - Screenshot */}
-      <div
-        style={{
-          position: "absolute",
-          right: 100,
-          top: "50%",
-          transform: `translateY(-50%) translateY(${screenY}px) scale(${screenScale * highlightScale})`,
-          opacity: screenOpacity,
-        }}
-      >
-        {/* Glow effect */}
+        {/* Right - Screenshot */}
         <div
           style={{
-            position: "absolute",
-            width: "120%",
-            height: "120%",
-            left: "-10%",
-            top: "-10%",
-            background:
-              "radial-gradient(ellipse, rgba(245, 158, 11, 0.15) 0%, transparent 70%)",
-            opacity: glowOpacity,
-            zIndex: -1,
-          }}
-        />
-
-        {/* Browser chrome frame */}
-        <div
-          style={{
-            backgroundColor: "#ffffff",
-            borderRadius: 24,
-            boxShadow: "0 50px 100px -20px rgba(0,0,0,0.15), 0 30px 60px -30px rgba(0,0,0,0.2)",
-            overflow: "hidden",
-            border: "1px solid rgba(0,0,0,0.08)",
+            flex: "0 0 auto",
+            position: "relative",
+            opacity: screenOpacity,
+            transform: `scale(${screenScale * highlightPulse}) perspective(1000px) rotateY(${screenRotateY}deg)`,
           }}
         >
-          {/* Browser top bar */}
+          {/* Glow behind */}
           <div
             style={{
-              height: 52,
-              backgroundColor: "#f8fafc",
-              borderBottom: "1px solid rgba(0,0,0,0.06)",
-              display: "flex",
-              alignItems: "center",
-              padding: "0 20px",
-              gap: 10,
+              position: "absolute",
+              width: "110%",
+              height: "110%",
+              left: "-5%",
+              top: "-5%",
+              background: "radial-gradient(ellipse, rgba(245,158,11,0.2) 0%, transparent 60%)",
+              filter: "blur(40px)",
+            }}
+          />
+
+          {/* Browser frame */}
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              borderRadius: 24,
+              boxShadow: "0 60px 120px -20px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.05)",
+              overflow: "hidden",
             }}
           >
+            {/* Browser bar */}
             <div
               style={{
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                backgroundColor: "#ef4444",
+                height: 56,
+                backgroundColor: "#f8fafc",
+                borderBottom: "1px solid rgba(0,0,0,0.06)",
+                display: "flex",
+                alignItems: "center",
+                padding: "0 24px",
+                gap: 10,
               }}
-            />
-            <div
+            >
+              <div style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: "#ef4444" }} />
+              <div style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: "#f59e0b" }} />
+              <div style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: "#22c55e" }} />
+            </div>
+
+            <Img
+              src={staticFile("citations.png")}
               style={{
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                backgroundColor: "#f59e0b",
-              }}
-            />
-            <div
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                backgroundColor: "#22c55e",
+                width: 1300,
+                height: "auto",
+                display: "block",
               }}
             />
           </div>
 
-          {/* Screenshot */}
-          <Img
-            src={staticFile("citations.png")}
+          {/* Floating annotation */}
+          <div
             style={{
-              width: 1400,
-              height: "auto",
-              display: "block",
+              position: "absolute",
+              top: 120,
+              right: -80,
+              backgroundColor: "#1e293b",
+              color: "#ffffff",
+              padding: "18px 28px",
+              borderRadius: 16,
+              fontSize: 26,
+              fontWeight: 600,
+              boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+              opacity: annotationOpacity,
+              transform: `scale(${annotationScale})`,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
             }}
-          />
+          >
+            <span style={{ color: "#f59e0b" }}>✦</span>
+            One click. Full context.
+          </div>
         </div>
       </div>
     </AbsoluteFill>
