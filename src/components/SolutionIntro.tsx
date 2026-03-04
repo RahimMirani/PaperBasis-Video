@@ -1,59 +1,65 @@
 import {
   AbsoluteFill,
+  Img,
   interpolate,
   spring,
   useCurrentFrame,
   useVideoConfig,
+  staticFile,
 } from "remotion";
-import { GradientOrbs, AnimatedLines } from "./MotionGraphics";
+import { GradientOrbs } from "./MotionGraphics";
 
 export const SolutionIntro: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Dramatic zoom in effect
-  const zoomProgress = spring({
-    frame,
-    fps,
-    config: { damping: 15, stiffness: 40 },
-  });
-  const bgScale = interpolate(zoomProgress, [0, 1], [1.3, 1]);
+  // Background pulse
+  const bgPulse = Math.sin(frame * 0.03) * 0.1 + 1;
 
-  // Main text animations with character-level stagger
-  const line1 = "A New Interface,";
-  const line2 = "for Research";
-
-  // Line 1 word animation
+  // Main text animations
   const line1Progress = spring({
     frame: frame - 10,
     fps,
     config: { damping: 12, stiffness: 70 },
   });
 
-  // Line 2 word animation
   const line2Progress = spring({
-    frame: frame - 35,
+    frame: frame - 30,
     fps,
     config: { damping: 12, stiffness: 70 },
   });
 
   const line1Opacity = interpolate(line1Progress, [0, 1], [0, 1]);
-  const line1Y = interpolate(line1Progress, [0, 1], [80, 0]);
+  const line1Y = interpolate(line1Progress, [0, 1], [60, 0]);
 
   const line2Opacity = interpolate(line2Progress, [0, 1], [0, 1]);
-  const line2Y = interpolate(line2Progress, [0, 1], [80, 0]);
+  const line2Y = interpolate(line2Progress, [0, 1], [60, 0]);
+
+  // Dashboard preview floating in background
+  const dashboardProgress = spring({
+    frame: frame - 45,
+    fps,
+    config: { damping: 15, stiffness: 50 },
+  });
+  const dashboardOpacity = interpolate(dashboardProgress, [0, 1], [0, 0.25]);
+  const dashboardScale = interpolate(dashboardProgress, [0, 1], [0.8, 1]);
+  const dashboardY = Math.sin(frame * 0.02) * 15;
 
   // Accent elements
   const accentProgress = spring({
-    frame: frame - 55,
+    frame: frame - 50,
     fps,
     config: { damping: 20, stiffness: 100 },
   });
-  const lineWidth = interpolate(accentProgress, [0, 1], [0, 600]);
-  const dotScale = interpolate(accentProgress, [0, 1], [0, 1]);
 
-  // Subtle rotation for dynamism
-  const rotation = Math.sin(frame * 0.02) * 0.5;
+  // Colorful dots
+  const dots = [
+    { color: "#f59e0b", delay: 0 },
+    { color: "#10b981", delay: 4 },
+    { color: "#f97316", delay: 8 },
+    { color: "#ec4899", delay: 12 },
+    { color: "#8b5cf6", delay: 16 },
+  ];
 
   // Exit animation
   const exitStart = 100;
@@ -61,7 +67,7 @@ export const SolutionIntro: React.FC = () => {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const exitScale = interpolate(frame, [exitStart, 120], [1, 0.9], {
+  const exitScale = interpolate(frame, [exitStart, 120], [1, 1.1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -72,11 +78,52 @@ export const SolutionIntro: React.FC = () => {
         backgroundColor: "#0f0f0f",
         justifyContent: "center",
         alignItems: "center",
-        transform: `scale(${bgScale})`,
+        transform: `scale(${bgPulse})`,
       }}
     >
       <GradientOrbs dark />
-      <AnimatedLines variant="diagonal" />
+
+      {/* Dashboard preview in background */}
+      <div
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          opacity: dashboardOpacity,
+          transform: `scale(${dashboardScale}) translateY(${dashboardY}px)`,
+        }}
+      >
+        <div
+          style={{
+            position: "relative",
+            transform: "perspective(2000px) rotateX(10deg) rotateY(-5deg)",
+          }}
+        >
+          <Img
+            src={staticFile("dashboard-code.png")}
+            style={{
+              width: 2200,
+              height: "auto",
+              borderRadius: 24,
+              filter: "blur(2px)",
+            }}
+          />
+          {/* Gradient overlay */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "radial-gradient(ellipse at center, transparent 20%, #0f0f0f 80%)",
+            }}
+          />
+        </div>
+      </div>
 
       <div
         style={{
@@ -85,24 +132,36 @@ export const SolutionIntro: React.FC = () => {
           alignItems: "center",
           gap: 30,
           opacity: exitOpacity,
-          transform: `scale(${exitScale}) rotate(${rotation}deg)`,
+          transform: `scale(${exitScale})`,
+          position: "relative",
+          zIndex: 10,
         }}
       >
-        {/* Accent dots */}
-        <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: "50%",
-                backgroundColor: i === 0 ? "#f59e0b" : i === 1 ? "#10b981" : "#f97316",
-                transform: `scale(${dotScale})`,
-                transitionDelay: `${i * 50}ms`,
-              }}
-            />
-          ))}
+        {/* Colorful dots row */}
+        <div style={{ display: "flex", gap: 20, marginBottom: 30 }}>
+          {dots.map((dot, i) => {
+            const dotProgress = spring({
+              frame: frame - 5 - dot.delay,
+              fps,
+              config: { damping: 8, stiffness: 150 },
+            });
+            const dotScale = interpolate(dotProgress, [0, 1], [0, 1]);
+            const dotY = interpolate(dotProgress, [0, 0.5, 1], [0, -20, 0]);
+
+            return (
+              <div
+                key={i}
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: "50%",
+                  backgroundColor: dot.color,
+                  transform: `scale(${dotScale}) translateY(${dotY}px)`,
+                  boxShadow: `0 0 30px ${dot.color}80`,
+                }}
+              />
+            );
+          })}
         </div>
 
         {/* Line 1 */}
@@ -120,11 +179,11 @@ export const SolutionIntro: React.FC = () => {
               letterSpacing: "-0.03em",
             }}
           >
-            {line1}
+            A New Interface,
           </span>
         </div>
 
-        {/* Line 2 - Italic with gradient */}
+        {/* Line 2 - Gradient text */}
         <div
           style={{
             opacity: line2Opacity,
@@ -136,26 +195,62 @@ export const SolutionIntro: React.FC = () => {
               fontSize: 140,
               fontWeight: 400,
               fontStyle: "italic",
-              background: "linear-gradient(135deg, #f59e0b 0%, #10b981 50%, #f97316 100%)",
+              background: "linear-gradient(135deg, #f59e0b 0%, #10b981 40%, #f97316 70%, #ec4899 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               letterSpacing: "-0.02em",
             }}
           >
-            {line2}
+            for Research
           </span>
         </div>
 
-        {/* Animated line */}
+        {/* Animated underline */}
         <div
           style={{
-            width: lineWidth,
-            height: 4,
-            background: "linear-gradient(90deg, #f59e0b, #10b981, #f97316)",
-            borderRadius: 2,
-            marginTop: 30,
+            width: interpolate(accentProgress, [0, 1], [0, 700]),
+            height: 6,
+            background: "linear-gradient(90deg, #f59e0b, #10b981, #f97316, #ec4899)",
+            borderRadius: 3,
+            marginTop: 20,
           }}
         />
+
+        {/* Feature pills */}
+        <div
+          style={{
+            display: "flex",
+            gap: 24,
+            marginTop: 50,
+            opacity: interpolate(accentProgress, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(accentProgress, [0, 1], [30, 0])}px)`,
+          }}
+        >
+          {[
+            { text: "AI-Powered", icon: "⚡" },
+            { text: "Contextual", icon: "🔗" },
+            { text: "Implementation Ready", icon: "💻" },
+          ].map((pill, i) => (
+            <div
+              key={i}
+              style={{
+                backgroundColor: "rgba(255,255,255,0.1)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                padding: "16px 32px",
+                borderRadius: 50,
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                fontSize: 26,
+                color: "#ffffff",
+                fontWeight: 500,
+              }}
+            >
+              <span>{pill.icon}</span>
+              {pill.text}
+            </div>
+          ))}
+        </div>
       </div>
     </AbsoluteFill>
   );
