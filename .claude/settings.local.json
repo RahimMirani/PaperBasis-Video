@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:www.paperbasis.com)"
+      "WebFetch(domain:www.paperbasis.com)",
+      "Bash(npm run lint:*)"
     ]
   }
 }
