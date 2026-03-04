@@ -246,7 +246,7 @@ export const FeatureCode: React.FC = () => {
                 fontWeight: 500,
               }}
             >
-              to production
+              to full code implementation
             </span>
           </h2>
 
@@ -259,7 +259,7 @@ export const FeatureCode: React.FC = () => {
               lineHeight: 1.5,
             }}
           >
-            Method sections become executable code.
+            Method sections become fully executable code.
             Copy, run, and build on research — instantly.
           </p>
 
