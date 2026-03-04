@@ -21,44 +21,37 @@ export const FeatureCode: React.FC = () => {
   });
   const badgeScale = interpolate(badgeProgress, [0, 1], [0, 1]);
 
-  // Screenshot entrance - from left
-  const screenProgress = spring({
-    frame: frame - 10,
-    fps,
-    config: { damping: 12, stiffness: 50 },
-  });
-  const screenX = interpolate(screenProgress, [0, 1], [-200, 0]);
-  const screenOpacity = interpolate(screenProgress, [0, 1], [0, 1]);
-  const screenScale = interpolate(screenProgress, [0, 1], [0.85, 1]);
-
-  // Text content
+  // Main content
   const contentProgress = spring({
-    frame: frame - 25,
+    frame: frame - 15,
     fps,
     config: { damping: 14, stiffness: 60 },
   });
   const contentOpacity = interpolate(contentProgress, [0, 1], [0, 1]);
-  const contentX = interpolate(contentProgress, [0, 1], [100, 0]);
+  const contentY = interpolate(contentProgress, [0, 1], [80, 0]);
 
-  // Code snippet floating effect
-  const codeFloat = Math.sin(frame * 0.04) * 10;
+  // Screenshot entrance
+  const screenProgress = spring({
+    frame: frame - 40,
+    fps,
+    config: { damping: 12, stiffness: 50 },
+  });
+  const screenOpacity = interpolate(screenProgress, [0, 1], [0, 1]);
+  const screenScale = interpolate(screenProgress, [0, 1], [0.85, 1]);
+
+  // Code badge
+  const codeFloat = Math.sin(frame * 0.04) * 6;
   const codeProgress = spring({
-    frame: frame - 60,
+    frame: frame - 100,
     fps,
     config: { damping: 15, stiffness: 80 },
   });
   const codeOpacity = interpolate(codeProgress, [0, 1], [0, 1]);
   const codeScale = interpolate(codeProgress, [0, 1], [0.8, 1]);
 
-  // Terminal typing effect
-  const typingProgress = interpolate(frame - 80, [0, 60], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
   // Exit
-  const exitStart = 155;
-  const exitOpacity = interpolate(frame, [exitStart, 180], [1, 0], {
+  const exitStart = 185;
+  const exitOpacity = interpolate(frame, [exitStart, 210], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -73,119 +66,24 @@ export const FeatureCode: React.FC = () => {
       <GradientOrbs dark />
       <GridPattern dark animated />
 
-      {/* Main layout */}
+      {/* ZOOMED IN layout - stacked vertically */}
       <div
         style={{
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           height: "100%",
-          gap: 80,
-          padding: "0 120px",
+          padding: "60px 120px",
+          gap: 60,
         }}
       >
-        {/* Left - Screenshot */}
+        {/* Top - Text content - MUCH BIGGER */}
         <div
           style={{
-            flex: "0 0 auto",
-            position: "relative",
-            opacity: screenOpacity,
-            transform: `translateX(${screenX}px) scale(${screenScale})`,
-          }}
-        >
-          {/* Glow */}
-          <div
-            style={{
-              position: "absolute",
-              width: "120%",
-              height: "120%",
-              left: "-10%",
-              top: "-10%",
-              background: "radial-gradient(ellipse, rgba(16,185,129,0.2) 0%, transparent 60%)",
-              filter: "blur(60px)",
-            }}
-          />
-
-          {/* Browser frame */}
-          <div
-            style={{
-              backgroundColor: "#1e293b",
-              borderRadius: 24,
-              boxShadow: "0 60px 120px -20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1)",
-              overflow: "hidden",
-            }}
-          >
-            {/* Browser bar */}
-            <div
-              style={{
-                height: 56,
-                backgroundColor: "#0f172a",
-                borderBottom: "1px solid rgba(255,255,255,0.1)",
-                display: "flex",
-                alignItems: "center",
-                padding: "0 24px",
-                gap: 10,
-              }}
-            >
-              <div style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: "#ef4444" }} />
-              <div style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: "#f59e0b" }} />
-              <div style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: "#22c55e" }} />
-              <div
-                style={{
-                  marginLeft: 30,
-                  backgroundColor: "#1e293b",
-                  borderRadius: 8,
-                  padding: "8px 20px",
-                  color: "#64748b",
-                  fontSize: 18,
-                }}
-              >
-                paperbasis.com/paper/attention-is-all-you-need
-              </div>
-            </div>
-
-            <Img
-              src={staticFile("dashboard-code.png")}
-              style={{
-                width: 1400,
-                height: "auto",
-                display: "block",
-              }}
-            />
-          </div>
-
-          {/* Floating code badge */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: -40,
-              left: 80,
-              backgroundColor: "#10b981",
-              color: "#ffffff",
-              padding: "16px 32px",
-              borderRadius: 50,
-              fontSize: 24,
-              fontWeight: 700,
-              boxShadow: "0 20px 40px rgba(16,185,129,0.4)",
-              opacity: codeOpacity,
-              transform: `scale(${codeScale}) translateY(${codeFloat}px)`,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <span style={{ fontSize: 28 }}>→</span>
-            Ready to run
-          </div>
-        </div>
-
-        {/* Right - Text content */}
-        <div
-          style={{
-            flex: "0 0 auto",
-            maxWidth: 800,
+            textAlign: "center",
             opacity: contentOpacity,
-            transform: `translateX(${contentX}px)`,
+            transform: `translateY(${contentY}px)`,
           }}
         >
           {/* Feature badge */}
@@ -193,27 +91,27 @@ export const FeatureCode: React.FC = () => {
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: 12,
+              gap: 16,
               backgroundColor: "rgba(16,185,129,0.15)",
-              border: "1px solid rgba(16,185,129,0.3)",
-              padding: "16px 28px",
-              borderRadius: 50,
-              marginBottom: 40,
+              border: "2px solid rgba(16,185,129,0.3)",
+              padding: "24px 48px",
+              borderRadius: 70,
+              marginBottom: 50,
               transform: `scale(${badgeScale})`,
             }}
           >
             <div
               style={{
-                width: 12,
-                height: 12,
+                width: 20,
+                height: 20,
                 borderRadius: "50%",
                 backgroundColor: "#10b981",
-                boxShadow: "0 0 12px #10b981",
+                boxShadow: "0 0 20px #10b981",
               }}
             />
             <span
               style={{
-                fontSize: 24,
+                fontSize: 40,
                 fontWeight: 600,
                 color: "#10b981",
                 letterSpacing: "0.05em",
@@ -224,19 +122,18 @@ export const FeatureCode: React.FC = () => {
             </span>
           </div>
 
-          {/* Headline */}
+          {/* Headline - HUGE */}
           <h2
             style={{
-              fontSize: 90,
+              fontSize: 150,
               fontWeight: 700,
               color: "#ffffff",
-              lineHeight: 1.05,
+              lineHeight: 1.0,
               letterSpacing: "-0.03em",
               margin: 0,
             }}
           >
-            From paper
-            <br />
+            From paper to{" "}
             <span
               style={{
                 background: "linear-gradient(135deg, #10b981, #34d399)",
@@ -246,45 +143,103 @@ export const FeatureCode: React.FC = () => {
                 fontWeight: 500,
               }}
             >
-              to full code implementation
+              full code
             </span>
           </h2>
+        </div>
 
-          {/* Subtext */}
-          <p
+        {/* Bottom - Screenshot - MASSIVE */}
+        <div
+          style={{
+            position: "relative",
+            opacity: screenOpacity,
+            transform: `scale(${screenScale})`,
+          }}
+        >
+          {/* Glow */}
+          <div
             style={{
-              fontSize: 34,
-              color: "#94a3b8",
-              marginTop: 36,
-              lineHeight: 1.5,
+              position: "absolute",
+              width: "140%",
+              height: "140%",
+              left: "-20%",
+              top: "-20%",
+              background: "radial-gradient(ellipse, rgba(16,185,129,0.3) 0%, transparent 60%)",
+              filter: "blur(80px)",
             }}
-          >
-            Method sections become fully executable code.
-            Copy, run, and build on research — instantly.
-          </p>
+          />
 
-          {/* Mini terminal */}
+          {/* Browser frame */}
           <div
             style={{
               backgroundColor: "#1e293b",
-              borderRadius: 16,
-              padding: "24px 32px",
-              marginTop: 40,
-              fontFamily: "monospace",
-              fontSize: 24,
-              color: "#10b981",
-              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 32,
+              boxShadow: "0 80px 160px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)",
+              overflow: "hidden",
             }}
           >
-            <span style={{ color: "#64748b" }}>$</span> python transformer.py
-            <span
+            {/* Browser bar */}
+            <div
               style={{
-                opacity: typingProgress > 0.5 ? 1 : 0,
-                marginLeft: 8,
+                height: 72,
+                backgroundColor: "#0f172a",
+                borderBottom: "1px solid rgba(255,255,255,0.1)",
+                display: "flex",
+                alignItems: "center",
+                padding: "0 32px",
+                gap: 14,
               }}
             >
-              ✓
-            </span>
+              <div style={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: "#ef4444" }} />
+              <div style={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: "#f59e0b" }} />
+              <div style={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: "#22c55e" }} />
+              <div
+                style={{
+                  marginLeft: 40,
+                  backgroundColor: "#1e293b",
+                  borderRadius: 12,
+                  padding: "12px 28px",
+                  color: "#64748b",
+                  fontSize: 26,
+                }}
+              >
+                paperbasis.com
+              </div>
+            </div>
+
+            {/* Screenshot - HUGE */}
+            <Img
+              src={staticFile("dashboard-code.png")}
+              style={{
+                width: 2400,
+                height: "auto",
+                display: "block",
+              }}
+            />
+          </div>
+
+          {/* Floating code badge - BIGGER */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: -40,
+              left: 150,
+              backgroundColor: "#10b981",
+              color: "#ffffff",
+              padding: "26px 52px",
+              borderRadius: 70,
+              fontSize: 38,
+              fontWeight: 700,
+              boxShadow: "0 30px 60px rgba(16,185,129,0.5)",
+              opacity: codeOpacity,
+              transform: `scale(${codeScale}) translateY(${codeFloat}px)`,
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+            }}
+          >
+            <span style={{ fontSize: 40 }}>→</span>
+            Ready to run
           </div>
         </div>
       </div>

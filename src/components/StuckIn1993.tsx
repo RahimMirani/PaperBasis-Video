@@ -65,7 +65,7 @@ export const StuckIn1993: React.FC = () => {
   });
 
   const line2Progress = spring({
-    frame: frame - 78,
+    frame: frame - 90,
     fps,
     config: { damping: 12, stiffness: 80 },
   });
@@ -80,12 +80,12 @@ export const StuckIn1993: React.FC = () => {
   const accentSaturation = interpolate(counterProgress, [0, 1], [0.3, 1]);
 
   // Exit animation
-  const exitStart = 100;
-  const exitOpacity = interpolate(frame, [exitStart, 120], [1, 0], {
+  const exitStart = 125;
+  const exitOpacity = interpolate(frame, [exitStart, 150], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const exitScale = interpolate(frame, [exitStart, 120], [1, 1.1], {
+  const exitScale = interpolate(frame, [exitStart, 150], [1, 1.1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

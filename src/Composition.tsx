@@ -11,17 +11,17 @@ import {
 } from "./components";
 
 /**
- * PaperBasis Launch Video - 30 seconds @ 30fps = 900 frames
+ * PaperBasis Launch Video - 40 seconds @ 30fps = 1200 frames
  *
- * Timeline (Logo at the end, final scenes in LIGHT MODE):
- * - 0-120 (0-4s): Stuck in 1993 (dark) - OPENER
- * - 120-250 (4-8.3s): Problem Statement (light)
- * - 250-370 (8.3-12.3s): Solution Intro (dark)
- * - 370-520 (12.3-17.3s): Feature - Citations (light)
- * - 520-670 (17.3-22.3s): Feature - Code (dark)
- * - 670-770 (22.3-25.7s): Product Reveal (light)
- * - 770-850 (25.7-28.3s): Tagline (LIGHT)
- * - 850-900 (28.3-30s): Logo Reveal (LIGHT) - CLOSER
+ * Extended Timeline for premium pacing:
+ * - 0-150 (0-5s): Stuck in 1993 - OPENER
+ * - 150-320 (5-10.7s): Problem Statement (3 problems)
+ * - 320-470 (10.7-15.7s): Solution Intro
+ * - 470-680 (15.7-22.7s): Feature - Citations (7 seconds)
+ * - 680-890 (22.7-29.7s): Feature - Code (7 seconds)
+ * - 890-1020 (29.7-34s): Product Reveal
+ * - 1020-1120 (34-37.3s): Tagline (LIGHT)
+ * - 1120-1200 (37.3-40s): Logo Reveal (LIGHT) - CLOSER
  */
 
 // Smooth transition component
@@ -29,7 +29,7 @@ const SmoothTransition: React.FC<{
   startFrame: number;
   duration?: number;
   fromDark?: boolean;
-}> = ({ startFrame, duration = 40, fromDark = true }) => {
+}> = ({ startFrame, duration = 50, fromDark = true }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -39,7 +39,7 @@ const SmoothTransition: React.FC<{
   const progress = spring({
     frame: localFrame,
     fps,
-    config: { damping: 25, stiffness: 80 },
+    config: { damping: 25, stiffness: 70 },
   });
 
   const opacity = fromDark
@@ -47,7 +47,7 @@ const SmoothTransition: React.FC<{
     : interpolate(progress, [0, 1], [0, 1]);
 
   const scale = interpolate(progress, [0, 1], [1, 1.05]);
-  const blur = interpolate(progress, [0, 0.5, 1], [0, 8, 0]);
+  const blur = interpolate(progress, [0, 0.5, 1], [0, 10, 0]);
 
   return (
     <AbsoluteFill
@@ -66,19 +66,18 @@ export const PaperBasisLaunch: React.FC = () => {
   const frame = useCurrentFrame();
 
   // Smooth background color transitions
-  // Now: Tagline (770+) and Logo (850+) are LIGHT mode
   const getBgDarkness = () => {
-    if (frame < 100) return 1; // 1993 - dark
-    if (frame < 140) return interpolate(frame, [100, 140], [1, 0]); // transition to light
-    if (frame < 230) return 0; // Problem - light
-    if (frame < 270) return interpolate(frame, [230, 270], [0, 1]); // transition to dark
-    if (frame < 350) return 1; // Solution - dark
-    if (frame < 390) return interpolate(frame, [350, 390], [1, 0]); // transition to light
-    if (frame < 500) return 0; // Citations - light
-    if (frame < 540) return interpolate(frame, [500, 540], [0, 1]); // transition to dark
-    if (frame < 650) return 1; // Code - dark
-    if (frame < 690) return interpolate(frame, [650, 690], [1, 0]); // transition to light
-    // Product, Tagline, Logo are all LIGHT now
+    if (frame < 130) return 1; // 1993 - dark
+    if (frame < 175) return interpolate(frame, [130, 175], [1, 0]); // transition to light
+    if (frame < 295) return 0; // Problem - light
+    if (frame < 345) return interpolate(frame, [295, 345], [0, 1]); // transition to dark
+    if (frame < 445) return 1; // Solution - dark
+    if (frame < 495) return interpolate(frame, [445, 495], [1, 0]); // transition to light
+    if (frame < 655) return 0; // Citations - light
+    if (frame < 705) return interpolate(frame, [655, 705], [0, 1]); // transition to dark
+    if (frame < 865) return 1; // Code - dark
+    if (frame < 915) return interpolate(frame, [865, 915], [1, 0]); // transition to light
+    // Product, Tagline, Logo are all LIGHT
     return 0;
   };
 
@@ -95,58 +94,58 @@ export const PaperBasisLaunch: React.FC = () => {
         }}
       />
 
-      {/* Scene 1: Stuck in 1993 (0-4s) - OPENER - Dark */}
-      <Sequence durationInFrames={120}>
+      {/* Scene 1: Stuck in 1993 (0-5s) - OPENER - Dark */}
+      <Sequence durationInFrames={150}>
         <StuckIn1993 />
       </Sequence>
 
       {/* Smooth transition to light */}
-      <SmoothTransition startFrame={100} duration={45} fromDark={true} />
+      <SmoothTransition startFrame={130} duration={50} fromDark={true} />
 
-      {/* Scene 2: Problem Statement (4-8.3s) - Light */}
-      <Sequence from={120} durationInFrames={130}>
+      {/* Scene 2: Problem Statement (5-10.7s) - Light */}
+      <Sequence from={150} durationInFrames={170}>
         <ProblemStatement />
       </Sequence>
 
       {/* Smooth transition to dark */}
-      <SmoothTransition startFrame={230} duration={45} fromDark={false} />
+      <SmoothTransition startFrame={295} duration={55} fromDark={false} />
 
-      {/* Scene 3: Solution Intro (8.3-12.3s) - Dark */}
-      <Sequence from={250} durationInFrames={120}>
+      {/* Scene 3: Solution Intro (10.7-15.7s) - Dark */}
+      <Sequence from={320} durationInFrames={150}>
         <SolutionIntro />
       </Sequence>
 
       {/* Smooth transition to light */}
-      <SmoothTransition startFrame={350} duration={45} fromDark={true} />
+      <SmoothTransition startFrame={445} duration={55} fromDark={true} />
 
-      {/* Scene 4: Feature - Citations (12.3-17.3s) - Light */}
-      <Sequence from={370} durationInFrames={150}>
+      {/* Scene 4: Feature - Citations (15.7-22.7s) - Light - MORE TIME */}
+      <Sequence from={470} durationInFrames={210}>
         <FeatureCitations />
       </Sequence>
 
       {/* Smooth transition to dark */}
-      <SmoothTransition startFrame={500} duration={45} fromDark={false} />
+      <SmoothTransition startFrame={655} duration={55} fromDark={false} />
 
-      {/* Scene 5: Feature - Code (17.3-22.3s) - Dark */}
-      <Sequence from={520} durationInFrames={150}>
+      {/* Scene 5: Feature - Code (22.7-29.7s) - Dark - MORE TIME */}
+      <Sequence from={680} durationInFrames={210}>
         <FeatureCode />
       </Sequence>
 
       {/* Smooth transition to light */}
-      <SmoothTransition startFrame={650} duration={45} fromDark={true} />
+      <SmoothTransition startFrame={865} duration={55} fromDark={true} />
 
-      {/* Scene 6: Product Reveal (22.3-25.7s) - Light */}
-      <Sequence from={670} durationInFrames={100}>
+      {/* Scene 6: Product Reveal (29.7-34s) - Light */}
+      <Sequence from={890} durationInFrames={130}>
         <ProductReveal />
       </Sequence>
 
-      {/* Scene 7: Tagline (25.7-28.3s) - LIGHT */}
-      <Sequence from={770} durationInFrames={80}>
+      {/* Scene 7: Tagline (34-37.3s) - LIGHT */}
+      <Sequence from={1020} durationInFrames={100}>
         <Tagline />
       </Sequence>
 
-      {/* Scene 8: Logo Reveal (28.3-30s) - LIGHT - CLOSER */}
-      <Sequence from={850} durationInFrames={50}>
+      {/* Scene 8: Logo Reveal (37.3-40s) - LIGHT - CLOSER */}
+      <Sequence from={1120} durationInFrames={80}>
         <LogoReveal />
       </Sequence>
     </AbsoluteFill>

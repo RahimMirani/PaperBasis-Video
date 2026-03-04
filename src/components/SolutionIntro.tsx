@@ -62,12 +62,12 @@ export const SolutionIntro: React.FC = () => {
   ];
 
   // Exit animation
-  const exitStart = 100;
-  const exitOpacity = interpolate(frame, [exitStart, 120], [1, 0], {
+  const exitStart = 125;
+  const exitOpacity = interpolate(frame, [exitStart, 150], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const exitScale = interpolate(frame, [exitStart, 120], [1, 1.08], {
+  const exitScale = interpolate(frame, [exitStart, 150], [1, 1.08], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

@@ -34,8 +34,8 @@ export const Tagline: React.FC = () => {
   ];
 
   // Exit to logo
-  const exitStart = 60;
-  const exitOpacity = interpolate(frame, [exitStart, 80], [1, 0], {
+  const exitStart = 80;
+  const exitOpacity = interpolate(frame, [exitStart, 100], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

@@ -51,7 +51,7 @@ const DensePapers: React.FC<{ startFrame: number }> = ({ startFrame }) => {
   });
 
   // Exit fade
-  const exitOpacity = interpolate(localFrame, [35, 43], [1, 0], {
+  const exitOpacity = interpolate(localFrame, [45, 56], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -133,7 +133,7 @@ const DeadEndCitations: React.FC<{ startFrame: number }> = ({ startFrame }) => {
   const citations = ["[1]", "[2]", "[3]", "[4]", "[5]", "[6]"];
 
   // Exit fade
-  const exitOpacity = interpolate(localFrame, [35, 43], [1, 0], {
+  const exitOpacity = interpolate(localFrame, [45, 56], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -288,7 +288,7 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
   const terminalScale = interpolate(terminalProgress, [0, 1], [0.85, 1]);
 
   // Exit fade
-  const exitOpacity = interpolate(localFrame, [38, 46], [1, 0], {
+  const exitOpacity = interpolate(localFrame, [48, 58], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -425,19 +425,19 @@ const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
 };
 
 export const ProblemStatement: React.FC = () => {
-  // Each problem gets ~43 frames
-  // Total: 130 frames
+  // Each problem gets ~56 frames (1.9 seconds)
+  // Total: 170 frames
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#fafafa" }}>
-      {/* Problem 1: Dense Papers (frames 0-43) */}
+      {/* Problem 1: Dense Papers (frames 0-56) */}
       <DensePapers startFrame={0} />
 
-      {/* Problem 2: Dead-end Citations (frames 43-86) */}
-      <DeadEndCitations startFrame={43} />
+      {/* Problem 2: Dead-end Citations (frames 56-112) */}
+      <DeadEndCitations startFrame={56} />
 
-      {/* Problem 3: No Implementation (frames 86-130) */}
-      <NoImplementation startFrame={86} />
+      {/* Problem 3: No Implementation (frames 112-170) */}
+      <NoImplementation startFrame={112} />
     </AbsoluteFill>
   );
 };

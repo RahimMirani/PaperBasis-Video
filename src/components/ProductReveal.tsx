@@ -46,12 +46,12 @@ export const ProductReveal: React.FC = () => {
   });
 
   // Exit animation
-  const exitStart = 95;
-  const exitOpacity = interpolate(frame, [exitStart, 120], [1, 0], {
+  const exitStart = 105;
+  const exitOpacity = interpolate(frame, [exitStart, 130], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const exitScale = interpolate(frame, [exitStart, 120], [1, 1.15], {
+  const exitScale = interpolate(frame, [exitStart, 130], [1, 1.15], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
