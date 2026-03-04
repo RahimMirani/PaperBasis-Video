@@ -11,11 +11,45 @@ export const StuckIn1993: React.FC = () => {
   const { fps } = useVideoConfig();
 
   // Year counter animation - counting from 1993 to 2026
-  const counterProgress = interpolate(frame, [15, 70], [0, 1], {
+  const counterProgress = interpolate(frame, [15, 75], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
   const currentYear = Math.floor(1993 + counterProgress * 33);
+
+  // FONT EVOLUTION: Old dull look → Modern crisp look
+  // Font weight: thin/light → bold
+  const fontWeight = interpolate(counterProgress, [0, 1], [300, 900]);
+
+  // Letter spacing: wide (old style) → tight (modern)
+  const letterSpacing = interpolate(counterProgress, [0, 1], [0.15, -0.02]);
+
+  // Color: dull gray → bright white
+  const colorBrightness = interpolate(counterProgress, [0, 1], [0.4, 1]);
+
+  // Blur: slightly blurry (old CRT) → crisp
+  const textBlur = interpolate(counterProgress, [0, 0.7, 1], [2, 0.5, 0]);
+
+  // Scale: slightly smaller → full size
+  const yearScale = interpolate(counterProgress, [0, 1], [0.85, 1]);
+
+  // Skew: slight skew (old) → straight (modern)
+  const skewX = interpolate(counterProgress, [0, 0.5, 1], [2, 0.5, 0]);
+
+  // OLD SCREEN EFFECTS (fade out as we get modern)
+  // Scanlines intensity
+  const scanlineOpacity = interpolate(counterProgress, [0, 0.6, 1], [0.6, 0.3, 0]);
+
+  // Screen flicker
+  const flickerIntensity = counterProgress < 0.5
+    ? Math.sin(frame * 0.8) * 0.08 * (1 - counterProgress * 2)
+    : 0;
+
+  // CRT curvature effect (vignette gets softer)
+  const vignetteIntensity = interpolate(counterProgress, [0, 1], [0.8, 0.4]);
+
+  // Background color evolution: darker → slightly lighter
+  const bgLightness = interpolate(counterProgress, [0, 1], [0.02, 0.06]);
 
   // Main text animations
   const line1Progress = spring({
@@ -31,20 +65,22 @@ export const StuckIn1993: React.FC = () => {
   });
 
   const line2Progress = spring({
-    frame: frame - 75,
+    frame: frame - 78,
     fps,
     config: { damping: 12, stiffness: 80 },
   });
 
-  // Glitch effect on year when it reaches 2026
-  const isGlitching = frame > 65 && frame < 80;
-  const glitchOffset = isGlitching ? Math.sin(frame * 3) * 8 : 0;
+  // Modern glow appears as we reach 2026
+  const modernGlow = interpolate(counterProgress, [0.8, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Pulsing glow when year stops
-  const glowPulse = frame > 70 ? Math.sin((frame - 70) * 0.15) * 0.3 + 0.7 : 0;
+  // Accent color evolution: dull → vibrant amber
+  const accentSaturation = interpolate(counterProgress, [0, 1], [0.3, 1]);
 
   // Exit animation
-  const exitStart = 95;
+  const exitStart = 100;
   const exitOpacity = interpolate(frame, [exitStart, 120], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -54,17 +90,21 @@ export const StuckIn1993: React.FC = () => {
     extrapolateRight: "clamp",
   });
 
+  // RGB color from brightness
+  const textColor = `rgb(${Math.floor(255 * colorBrightness)}, ${Math.floor(255 * colorBrightness)}, ${Math.floor(255 * colorBrightness)})`;
+  const labelColor = `rgb(${Math.floor(82 * (0.5 + counterProgress * 0.5))}, ${Math.floor(82 * (0.5 + counterProgress * 0.5))}, ${Math.floor(82 * (0.5 + counterProgress * 0.5))})`;
+
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: "#0a0a0a",
+        backgroundColor: `hsl(0, 0%, ${bgLightness * 100}%)`,
         justifyContent: "center",
         alignItems: "center",
-        opacity: exitOpacity,
+        opacity: exitOpacity * (1 + flickerIntensity),
         transform: `scale(${exitScale})`,
       }}
     >
-      {/* Retro scanlines */}
+      {/* Retro scanlines - fade out as we modernize */}
       <div
         style={{
           position: "absolute",
@@ -74,21 +114,34 @@ export const StuckIn1993: React.FC = () => {
             0deg,
             transparent,
             transparent 3px,
-            rgba(0,0,0,0.15) 3px,
-            rgba(0,0,0,0.15) 6px
+            rgba(0,0,0,0.2) 3px,
+            rgba(0,0,0,0.2) 6px
           )`,
           pointerEvents: "none",
-          opacity: 0.4,
+          opacity: scanlineOpacity,
         }}
       />
 
-      {/* Vignette */}
+      {/* CRT vignette - softens as we modernize */}
       <div
         style={{
           position: "absolute",
           width: "100%",
           height: "100%",
-          background: "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%)",
+          background: `radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
+          pointerEvents: "none",
+        }}
+      />
+
+
+      {/* Modern gradient glow - appears at the end */}
+      <div
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          background: "radial-gradient(ellipse at center, rgba(245,158,11,0.15) 0%, transparent 50%)",
+          opacity: modernGlow,
           pointerEvents: "none",
         }}
       />
@@ -101,7 +154,7 @@ export const StuckIn1993: React.FC = () => {
           gap: 50,
         }}
       >
-        {/* Small label */}
+        {/* Small label - also evolves */}
         <div
           style={{
             opacity: interpolate(line1Progress, [0, 1], [0, 1]),
@@ -111,62 +164,49 @@ export const StuckIn1993: React.FC = () => {
           <span
             style={{
               fontSize: 42,
-              fontWeight: 500,
-              color: "#525252",
-              letterSpacing: "0.25em",
+              fontWeight: interpolate(counterProgress, [0, 1], [400, 500]),
+              color: labelColor,
+              letterSpacing: `${interpolate(counterProgress, [0, 1], [0.3, 0.25])}em`,
               textTransform: "uppercase",
+              filter: `blur(${textBlur * 0.5}px)`,
             }}
           >
             Reading research papers since
           </span>
         </div>
 
-        {/* BIG year counter */}
+        {/* BIG year counter - EVOLVING TYPOGRAPHY */}
         <div
           style={{
             position: "relative",
             opacity: interpolate(yearProgress, [0, 1], [0, 1]),
-            transform: `translateX(${glitchOffset}px) scale(${interpolate(yearProgress, [0, 1], [0.6, 1])})`,
+            transform: `scale(${interpolate(yearProgress, [0, 1], [0.6, 1]) * yearScale}) skewX(${skewX}deg)`,
           }}
         >
-          {/* Glitch color layers */}
-          {isGlitching && (
-            <>
-              <span
-                style={{
-                  position: "absolute",
-                  fontSize: 380,
-                  fontWeight: 900,
-                  color: "#ef4444",
-                  opacity: 0.7,
-                  transform: "translateX(-12px)",
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                {currentYear}
-              </span>
-              <span
-                style={{
-                  position: "absolute",
-                  fontSize: 380,
-                  fontWeight: 900,
-                  color: "#22c55e",
-                  opacity: 0.7,
-                  transform: "translateX(12px)",
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                {currentYear}
-              </span>
-            </>
-          )}
+          {/* Glow behind (modern only) */}
+          <div
+            style={{
+              position: "absolute",
+              width: "120%",
+              height: "120%",
+              left: "-10%",
+              top: "-10%",
+              background: "radial-gradient(ellipse, rgba(245,158,11,0.4) 0%, transparent 60%)",
+              opacity: modernGlow,
+              filter: "blur(40px)",
+            }}
+          />
+
           <span
             style={{
               fontSize: 380,
-              fontWeight: 900,
-              color: "#ffffff",
-              letterSpacing: "-0.02em",
-              textShadow: glowPulse > 0 ? `0 0 ${glowPulse * 60}px rgba(245,158,11,0.5)` : "none",
+              fontWeight: fontWeight,
+              color: textColor,
+              letterSpacing: `${letterSpacing}em`,
+              filter: `blur(${textBlur}px)`,
+              textShadow: modernGlow > 0.5
+                ? `0 0 ${modernGlow * 80}px rgba(245,158,11,0.5)`
+                : "none",
             }}
           >
             {currentYear}
@@ -187,7 +227,7 @@ export const StuckIn1993: React.FC = () => {
             style={{
               width: 80,
               height: 4,
-              backgroundColor: "#f59e0b",
+              backgroundColor: `hsl(38, ${accentSaturation * 100}%, 50%)`,
               borderRadius: 2,
             }}
           />
@@ -204,10 +244,37 @@ export const StuckIn1993: React.FC = () => {
             style={{
               width: 80,
               height: 4,
-              backgroundColor: "#f59e0b",
+              backgroundColor: `hsl(38, ${accentSaturation * 100}%, 50%)`,
               borderRadius: 2,
             }}
           />
+        </div>
+
+        {/* Evolution indicator dots */}
+        <div
+          style={{
+            display: "flex",
+            gap: 16,
+            marginTop: 30,
+            opacity: interpolate(counterProgress, [0, 0.3, 1], [0, 0.5, 1]),
+          }}
+        >
+          {[0, 0.25, 0.5, 0.75, 1].map((threshold, i) => (
+            <div
+              key={i}
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: "50%",
+                backgroundColor: counterProgress >= threshold
+                  ? `hsl(38, ${accentSaturation * 100}%, 50%)`
+                  : "#333",
+                boxShadow: counterProgress >= threshold && counterProgress > 0.8
+                  ? `0 0 15px hsl(38, ${accentSaturation * 100}%, 50%)`
+                  : "none",
+              }}
+            />
+          ))}
         </div>
       </div>
     </AbsoluteFill>

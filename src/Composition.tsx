@@ -13,15 +13,15 @@ import {
 /**
  * PaperBasis Launch Video - 30 seconds @ 30fps = 900 frames
  *
- * NEW Timeline (Logo at the end):
+ * Timeline (Logo at the end, final scenes in LIGHT MODE):
  * - 0-120 (0-4s): Stuck in 1993 (dark) - OPENER
  * - 120-250 (4-8.3s): Problem Statement (light)
  * - 250-370 (8.3-12.3s): Solution Intro (dark)
  * - 370-520 (12.3-17.3s): Feature - Citations (light)
  * - 520-670 (17.3-22.3s): Feature - Code (dark)
  * - 670-770 (22.3-25.7s): Product Reveal (light)
- * - 770-850 (25.7-28.3s): Tagline (dark)
- * - 850-900 (28.3-30s): Logo Reveal (dark) - CLOSER
+ * - 770-850 (25.7-28.3s): Tagline (LIGHT)
+ * - 850-900 (28.3-30s): Logo Reveal (LIGHT) - CLOSER
  */
 
 // Smooth transition component
@@ -66,8 +66,8 @@ export const PaperBasisLaunch: React.FC = () => {
   const frame = useCurrentFrame();
 
   // Smooth background color transitions
+  // Now: Tagline (770+) and Logo (850+) are LIGHT mode
   const getBgDarkness = () => {
-    // Scene boundaries with smooth interpolation
     if (frame < 100) return 1; // 1993 - dark
     if (frame < 140) return interpolate(frame, [100, 140], [1, 0]); // transition to light
     if (frame < 230) return 0; // Problem - light
@@ -78,9 +78,8 @@ export const PaperBasisLaunch: React.FC = () => {
     if (frame < 540) return interpolate(frame, [500, 540], [0, 1]); // transition to dark
     if (frame < 650) return 1; // Code - dark
     if (frame < 690) return interpolate(frame, [650, 690], [1, 0]); // transition to light
-    if (frame < 750) return 0; // Product - light
-    if (frame < 790) return interpolate(frame, [750, 790], [0, 1]); // transition to dark
-    return 1; // Tagline & Logo - dark
+    // Product, Tagline, Logo are all LIGHT now
+    return 0;
   };
 
   const darkOpacity = getBgDarkness();
@@ -141,15 +140,12 @@ export const PaperBasisLaunch: React.FC = () => {
         <ProductReveal />
       </Sequence>
 
-      {/* Smooth transition to dark */}
-      <SmoothTransition startFrame={750} duration={45} fromDark={false} />
-
-      {/* Scene 7: Tagline (25.7-28.3s) - Dark */}
+      {/* Scene 7: Tagline (25.7-28.3s) - LIGHT */}
       <Sequence from={770} durationInFrames={80}>
         <Tagline />
       </Sequence>
 
-      {/* Scene 8: Logo Reveal (28.3-30s) - CLOSER - Dark */}
+      {/* Scene 8: Logo Reveal (28.3-30s) - LIGHT - CLOSER */}
       <Sequence from={850} durationInFrames={50}>
         <LogoReveal />
       </Sequence>

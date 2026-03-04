@@ -7,7 +7,7 @@ import {
   useVideoConfig,
   staticFile,
 } from "remotion";
-import { GradientOrbs } from "./MotionGraphics";
+import { FloatingShapes } from "./MotionGraphics";
 
 export const LogoReveal: React.FC = () => {
   const frame = useCurrentFrame();
@@ -21,7 +21,7 @@ export const LogoReveal: React.FC = () => {
   });
 
   const logoOpacity = interpolate(logoProgress, [0, 1], [0, 1]);
-  const logoScale = interpolate(logoProgress, [0, 1], [0.8, 1]);
+  const logoScale = interpolate(logoProgress, [0, 1], [0.85, 1]);
   const logoY = interpolate(logoProgress, [0, 1], [50, 0]);
 
   // Icon subtle animation
@@ -43,27 +43,26 @@ export const LogoReveal: React.FC = () => {
   });
   const urlOpacity = interpolate(urlProgress, [0, 1], [0, 1]);
 
-  // Pulsing glow
-  const glowPulse = Math.sin(frame * 0.12) * 0.3 + 0.7;
+  // Animated background gradient
+  const gradientAngle = frame * 0.4;
 
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: "#0f0f0f",
+        background: `linear-gradient(${gradientAngle}deg, #FFFBF5 0%, #fef3c7 30%, #d1fae5 70%, #FFFBF5 100%)`,
         justifyContent: "center",
         alignItems: "center",
       }}
     >
-      <GradientOrbs dark />
+      <FloatingShapes colors={["#fde68a", "#d1fae5", "#fed7aa", "#fce7f3", "#e0e7ff"]} count={10} speed={0.5} />
 
-      {/* Radial glow */}
+      {/* Subtle radial gradient */}
       <div
         style={{
           position: "absolute",
           width: "100%",
           height: "100%",
-          background: "radial-gradient(circle at 50% 50%, rgba(245,158,11,0.12) 0%, transparent 50%)",
-          opacity: glowPulse,
+          background: "radial-gradient(circle at 50% 50%, rgba(16,185,129,0.1) 0%, transparent 50%)",
         }}
       />
 
@@ -92,7 +91,7 @@ export const LogoReveal: React.FC = () => {
               position: "relative",
             }}
           >
-            {/* Glow behind icon */}
+            {/* Subtle glow behind icon */}
             <div
               style={{
                 position: "absolute",
@@ -101,8 +100,8 @@ export const LogoReveal: React.FC = () => {
                 left: "50%",
                 top: "50%",
                 transform: "translate(-50%, -50%)",
-                background: "radial-gradient(circle, rgba(245,158,11,0.4) 0%, transparent 60%)",
-                filter: "blur(25px)",
+                background: "radial-gradient(circle, rgba(245,158,11,0.2) 0%, transparent 60%)",
+                filter: "blur(20px)",
               }}
             />
             <Img
@@ -110,17 +109,16 @@ export const LogoReveal: React.FC = () => {
               style={{
                 width: 160,
                 height: "auto",
-                filter: "brightness(0) invert(1)",
               }}
             />
           </div>
 
-          {/* Logo text */}
+          {/* Logo text - DARK ON LIGHT */}
           <span
             style={{
               fontSize: 140,
               fontWeight: 700,
-              color: "#ffffff",
+              color: "#1a1a1a",
               letterSpacing: "-0.03em",
             }}
           >
@@ -153,14 +151,14 @@ export const LogoReveal: React.FC = () => {
               height: 14,
               borderRadius: "50%",
               backgroundColor: "#10b981",
-              boxShadow: "0 0 20px #10b981",
+              boxShadow: "0 0 15px rgba(16,185,129,0.5)",
             }}
           />
           <span
             style={{
               fontSize: 48,
               fontWeight: 500,
-              color: "#94a3b8",
+              color: "#64748b",
               letterSpacing: "0.02em",
             }}
           >

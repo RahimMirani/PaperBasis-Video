@@ -5,7 +5,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { GradientOrbs } from "./MotionGraphics";
+import { FloatingShapes } from "./MotionGraphics";
 
 export const Tagline: React.FC = () => {
   const frame = useCurrentFrame();
@@ -24,8 +24,8 @@ export const Tagline: React.FC = () => {
   });
   const underlineWidth = interpolate(underlineProgress, [0, 1], [0, 100]);
 
-  // Subtle pulsing glow
-  const glowPulse = 0.6 + Math.sin(frame * 0.1) * 0.25;
+  // Subtle animated gradient background
+  const gradientAngle = frame * 0.3;
 
   const words = [
     { text: "Research,", progress: word1, gradient: false },
@@ -43,22 +43,21 @@ export const Tagline: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: "#0f0f0f",
+        background: `linear-gradient(${gradientAngle}deg, #FFFBF5 0%, #fef3c7 50%, #FFFBF5 100%)`,
         justifyContent: "center",
         alignItems: "center",
         opacity: exitOpacity,
       }}
     >
-      <GradientOrbs dark />
+      <FloatingShapes colors={["#fde68a", "#d1fae5", "#fed7aa", "#fce7f3"]} count={8} speed={0.4} />
 
-      {/* Radial glow */}
+      {/* Subtle radial gradient */}
       <div
         style={{
           position: "absolute",
           width: "100%",
           height: "100%",
-          background: "radial-gradient(circle at 50% 50%, rgba(245,158,11,0.15) 0%, transparent 50%)",
-          opacity: glowPulse,
+          background: "radial-gradient(circle at 50% 50%, rgba(245,158,11,0.1) 0%, transparent 50%)",
         }}
       />
 
@@ -70,7 +69,7 @@ export const Tagline: React.FC = () => {
           gap: 60,
         }}
       >
-        {/* Tagline - BIGGER */}
+        {/* Tagline - LIGHT MODE */}
         <div
           style={{
             display: "flex",
@@ -97,7 +96,7 @@ export const Tagline: React.FC = () => {
                     fontSize: 160,
                     fontWeight: word.italic ? 400 : 700,
                     fontStyle: word.italic ? "italic" : "normal",
-                    color: word.gradient ? undefined : "#ffffff",
+                    color: word.gradient ? undefined : "#1a1a1a",
                     background: word.gradient
                       ? "linear-gradient(135deg, #f59e0b 0%, #10b981 50%, #f97316 100%)"
                       : undefined,
