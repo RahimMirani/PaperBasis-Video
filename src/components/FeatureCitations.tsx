@@ -66,6 +66,7 @@ export const FeatureCitations: React.FC = () => {
       style={{
         backgroundColor: "#FFFBF5",
         opacity: exitOpacity,
+        overflow: "visible",
       }}
     >
       <GradientOrbs />
@@ -78,8 +79,9 @@ export const FeatureCitations: React.FC = () => {
           alignItems: "center",
           justifyContent: "center",
           height: "100%",
-          padding: "60px 120px",
+          padding: "80px 200px",
           gap: 60,
+          overflow: "visible",
         }}
       >
         {/* Top - Text content - MUCH BIGGER */}
@@ -88,6 +90,7 @@ export const FeatureCitations: React.FC = () => {
             textAlign: "center",
             opacity: contentOpacity,
             transform: `translateY(${contentY}px)`,
+            overflow: "visible",
           }}
         >
           {/* Feature badge */}
@@ -124,15 +127,17 @@ export const FeatureCitations: React.FC = () => {
             </span>
           </div>
 
-          {/* Headline - HUGE */}
+          {/* Headline - BIG with proper padding */}
           <h2
             style={{
               fontSize: 150,
               fontWeight: 700,
               color: "#1a1a1a",
-              lineHeight: 1.0,
-              letterSpacing: "-0.03em",
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
               margin: 0,
+              padding: "0 100px",
+              overflow: "visible",
             }}
           >
             Citations that{" "}
@@ -201,7 +206,7 @@ export const FeatureCitations: React.FC = () => {
             <Img
               src={staticFile("citations.png")}
               style={{
-                width: 2200,
+                width: 2000,
                 height: "auto",
                 display: "block",
               }}

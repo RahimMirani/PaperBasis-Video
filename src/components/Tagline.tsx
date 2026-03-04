@@ -47,6 +47,7 @@ export const Tagline: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
         opacity: exitOpacity,
+        overflow: "visible",
       }}
     >
       <FloatingShapes colors={["#fde68a", "#d1fae5", "#fed7aa", "#fce7f3"]} count={8} speed={0.4} />
@@ -67,14 +68,17 @@ export const Tagline: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           gap: 60,
+          padding: "0 150px",
+          overflow: "visible",
         }}
       >
-        {/* Tagline - LIGHT MODE */}
+        {/* Tagline - LIGHT MODE - with proper spacing */}
         <div
           style={{
             display: "flex",
-            gap: 40,
+            gap: 50,
             alignItems: "baseline",
+            overflow: "visible",
           }}
         >
           {words.map((word, index) => {
@@ -89,11 +93,12 @@ export const Tagline: React.FC = () => {
                   position: "relative",
                   transform: `translateY(${y}px) scale(${scale})`,
                   opacity,
+                  overflow: "visible",
                 }}
               >
                 <span
                   style={{
-                    fontSize: 160,
+                    fontSize: 180,
                     fontWeight: word.italic ? 400 : 700,
                     fontStyle: word.italic ? "italic" : "normal",
                     color: word.gradient ? undefined : "#1a1a1a",
@@ -103,6 +108,8 @@ export const Tagline: React.FC = () => {
                     WebkitBackgroundClip: word.gradient ? "text" : undefined,
                     WebkitTextFillColor: word.gradient ? "transparent" : undefined,
                     letterSpacing: "-0.02em",
+                    display: "inline-block",
+                    padding: "0 10px",
                   }}
                 >
                   {word.text}
@@ -111,12 +118,12 @@ export const Tagline: React.FC = () => {
                   <div
                     style={{
                       position: "absolute",
-                      bottom: 16,
-                      left: 0,
-                      height: 12,
+                      bottom: 20,
+                      left: 10,
+                      height: 14,
                       width: `${underlineWidth}%`,
                       background: "linear-gradient(90deg, #f59e0b, #10b981)",
-                      borderRadius: 6,
+                      borderRadius: 7,
                     }}
                   />
                 )}

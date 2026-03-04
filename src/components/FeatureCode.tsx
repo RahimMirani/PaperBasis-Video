@@ -61,6 +61,7 @@ export const FeatureCode: React.FC = () => {
       style={{
         backgroundColor: "#0f0f0f",
         opacity: exitOpacity,
+        overflow: "visible",
       }}
     >
       <GradientOrbs dark />
@@ -74,8 +75,9 @@ export const FeatureCode: React.FC = () => {
           alignItems: "center",
           justifyContent: "center",
           height: "100%",
-          padding: "60px 120px",
+          padding: "80px 200px",
           gap: 60,
+          overflow: "visible",
         }}
       >
         {/* Top - Text content - MUCH BIGGER */}
@@ -84,6 +86,7 @@ export const FeatureCode: React.FC = () => {
             textAlign: "center",
             opacity: contentOpacity,
             transform: `translateY(${contentY}px)`,
+            overflow: "visible",
           }}
         >
           {/* Feature badge */}
@@ -122,15 +125,17 @@ export const FeatureCode: React.FC = () => {
             </span>
           </div>
 
-          {/* Headline - HUGE */}
+          {/* Headline - BIG with proper padding */}
           <h2
             style={{
               fontSize: 150,
               fontWeight: 700,
               color: "#ffffff",
-              lineHeight: 1.0,
-              letterSpacing: "-0.03em",
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
               margin: 0,
+              padding: "0 100px",
+              overflow: "visible",
             }}
           >
             From paper to{" "}
@@ -211,7 +216,7 @@ export const FeatureCode: React.FC = () => {
             <Img
               src={staticFile("dashboard-code.png")}
               style={{
-                width: 2400,
+                width: 2200,
                 height: "auto",
                 display: "block",
               }}
