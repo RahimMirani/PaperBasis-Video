@@ -15,7 +15,7 @@ export const StuckIn1993: React.FC = () => {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const currentYear = Math.floor(1993 + counterProgress * 32);
+  const currentYear = Math.floor(1993 + counterProgress * 33);
 
   // Main text animations
   const line1Progress = spring({

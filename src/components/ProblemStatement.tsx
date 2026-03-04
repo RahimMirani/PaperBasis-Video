@@ -6,75 +6,52 @@ import {
   useVideoConfig,
 } from "remotion";
 
-export const ProblemStatement: React.FC = () => {
+// Problem 1: Dense Papers - Visual of overwhelming text lines
+const DensePapers: React.FC<{ startFrame: number }> = ({ startFrame }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const localFrame = frame - startFrame;
 
-  // Background gradient animation
-  const gradientAngle = frame * 0.3;
+  if (localFrame < 0) return null;
 
-  // Three problem cards with icons and colors
-  const problems = [
-    {
-      icon: "📄",
-      text: "Dense papers",
-      subtext: "Walls of text, no clarity",
-      color: "#ef4444",
-      bgColor: "#fef2f2",
-      delay: 5,
-    },
-    {
-      icon: "🔗",
-      text: "Dead-end citations",
-      subtext: "References that go nowhere",
-      color: "#f97316",
-      bgColor: "#fff7ed",
-      delay: 25,
-    },
-    {
-      icon: "💻",
-      text: "No implementation",
-      subtext: "Theory without practice",
-      color: "#eab308",
-      bgColor: "#fefce8",
-      delay: 45,
-    },
-  ];
+  const textProgress = spring({
+    frame: localFrame - 5,
+    fps,
+    config: { damping: 12, stiffness: 80 },
+  });
 
-  // Floating particles
-  const particles = Array.from({ length: 15 }, (_, i) => {
-    const x = (i * 270 + 100) % 3840;
-    const y = (i * 180 + 80) % 2160;
-    const size = 8 + (i % 4) * 6;
-    const colors = ["#fecaca", "#fed7aa", "#fef08a", "#d1fae5", "#e0e7ff"];
-    const color = colors[i % colors.length];
-    const floatX = Math.sin(frame * 0.02 + i) * 30;
-    const floatY = Math.cos(frame * 0.025 + i * 0.5) * 25;
+  const textOpacity = interpolate(textProgress, [0, 1], [0, 1]);
+  const textY = interpolate(textProgress, [0, 1], [60, 0]);
+
+  // Create overwhelming lines of "text" that pile up - BIGGER
+  const linesCount = Math.min(Math.floor(localFrame * 1.2), 30);
+  const lines = Array.from({ length: linesCount }, (_, i) => {
+    const lineProgress = spring({
+      frame: localFrame - i * 1.5,
+      fps,
+      config: { damping: 20, stiffness: 150 },
+    });
+    const lineOpacity = interpolate(lineProgress, [0, 1], [0, 0.7]);
+    const lineWidth = 500 + (i % 5) * 120 + Math.sin(i * 1.5) * 150;
+    const xOffset = Math.sin(i * 0.8) * 40;
 
     return (
       <div
         key={i}
         style={{
-          position: "absolute",
-          left: x + floatX,
-          top: y + floatY,
-          width: size,
-          height: size,
-          backgroundColor: color,
-          borderRadius: "50%",
-          opacity: 0.6,
+          height: 18,
+          width: lineWidth,
+          backgroundColor: "#9ca3af",
+          borderRadius: 9,
+          opacity: lineOpacity,
+          transform: `translateX(${xOffset}px)`,
         }}
       />
     );
   });
 
-  // Exit animation
-  const exitStart = 95;
-  const exitOpacity = interpolate(frame, [exitStart, 115], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const exitY = interpolate(frame, [exitStart, 115], [0, -50], {
+  // Exit fade
+  const exitOpacity = interpolate(localFrame, [32, 40], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -82,202 +59,386 @@ export const ProblemStatement: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        background: `linear-gradient(${gradientAngle}deg, #fffbeb 0%, #fef3c7 25%, #ffedd5 50%, #fee2e2 75%, #fce7f3 100%)`,
+        backgroundColor: "#fafafa",
         justifyContent: "center",
         alignItems: "center",
+        opacity: exitOpacity,
       }}
     >
-      {/* Animated particles */}
-      {particles}
-
-      {/* Large decorative shapes */}
-      <div
-        style={{
-          position: "absolute",
-          top: 150,
-          right: 200,
-          width: 400,
-          height: 400,
-          borderRadius: "50%",
-          border: "3px solid rgba(239,68,68,0.2)",
-          transform: `rotate(${frame * 0.2}deg)`,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: 200,
-          left: 150,
-          width: 300,
-          height: 300,
-          borderRadius: "30%",
-          border: "3px solid rgba(249,115,22,0.2)",
-          transform: `rotate(${-frame * 0.15}deg)`,
-        }}
-      />
-
+      {/* Centered container for text + visual */}
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
-          gap: 60,
-          opacity: exitOpacity,
-          transform: `translateY(${exitY}px)`,
+          gap: 120,
         }}
       >
-        {/* Header */}
+        {/* Text */}
         <div
           style={{
-            opacity: interpolate(
-              spring({ frame, fps, config: { damping: 15, stiffness: 80 } }),
-              [0, 1],
-              [0, 1]
-            ),
+            opacity: textOpacity,
+            transform: `translateY(${textY}px)`,
           }}
         >
-          <span
+          <h1
             style={{
-              fontSize: 36,
-              fontWeight: 600,
-              color: "#9ca3af",
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
+              fontSize: 160,
+              fontWeight: 800,
+              color: "#1a1a1a",
+              letterSpacing: "-0.04em",
+              lineHeight: 1,
+              margin: 0,
             }}
           >
-            The Problem
-          </span>
+            Dense
+            <br />
+            <span style={{ color: "#ef4444" }}>papers.</span>
+          </h1>
         </div>
 
-        {/* Problem cards in a row */}
+        {/* Visual: Wall of text lines - RIGHT NEXT TO TEXT */}
         <div
           style={{
             display: "flex",
-            gap: 60,
-            alignItems: "stretch",
+            flexDirection: "column",
+            gap: 16,
+            alignItems: "flex-start",
           }}
         >
-          {problems.map((problem, index) => {
-            const cardProgress = spring({
-              frame: frame - problem.delay,
+          {lines}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+// Problem 2: Dead-end Citations - Visual of broken/disconnected links
+const DeadEndCitations: React.FC<{ startFrame: number }> = ({ startFrame }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const localFrame = frame - startFrame;
+
+  if (localFrame < 0) return null;
+
+  const textProgress = spring({
+    frame: localFrame - 5,
+    fps,
+    config: { damping: 12, stiffness: 80 },
+  });
+
+  const textOpacity = interpolate(textProgress, [0, 1], [0, 1]);
+  const textX = interpolate(textProgress, [0, 1], [-80, 0]);
+
+  // Citation brackets that lead to nothing - BIGGER
+  const citations = ["[1]", "[2]", "[3]", "[4]", "[5]", "[6]"];
+
+  // Exit fade
+  const exitOpacity = interpolate(localFrame, [32, 40], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <AbsoluteFill
+      style={{
+        backgroundColor: "#fafafa",
+        justifyContent: "center",
+        alignItems: "center",
+        opacity: exitOpacity,
+      }}
+    >
+      {/* Centered container for text + visual */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 100,
+        }}
+      >
+        {/* Text */}
+        <div
+          style={{
+            opacity: textOpacity,
+            transform: `translateX(${textX}px)`,
+          }}
+        >
+          <h1
+            style={{
+              fontSize: 160,
+              fontWeight: 800,
+              color: "#1a1a1a",
+              letterSpacing: "-0.04em",
+              lineHeight: 1,
+              margin: 0,
+            }}
+          >
+            Dead-end
+            <br />
+            <span style={{ color: "#f97316" }}>citations.</span>
+          </h1>
+        </div>
+
+        {/* Visual: Citation brackets with broken lines - BIGGER */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 32,
+          }}
+        >
+          {citations.map((citation, i) => {
+            const citationProgress = spring({
+              frame: localFrame - 8 - i * 3,
               fps,
-              config: { damping: 12, stiffness: 70 },
+              config: { damping: 12, stiffness: 100 },
             });
+            const citationOpacity = interpolate(citationProgress, [0, 1], [0, 1]);
+            const citationX = interpolate(citationProgress, [0, 1], [80, 0]);
 
-            const cardOpacity = interpolate(cardProgress, [0, 1], [0, 1]);
-            const cardY = interpolate(cardProgress, [0, 1], [80, 0]);
-            const cardScale = interpolate(cardProgress, [0, 1], [0.8, 1]);
-            const cardRotation = interpolate(cardProgress, [0, 1], [10, 0]);
-
-            // Hover-like pulse effect
-            const pulseDelay = problem.delay + 30;
-            const pulse =
-              frame > pulseDelay
-                ? Math.sin((frame - pulseDelay) * 0.08) * 0.02 + 1
-                : 1;
+            // Line that breaks/fades
+            const lineWidth = interpolate(citationProgress, [0, 0.5, 1], [0, 350, 180]);
+            const lineOpacity = interpolate(citationProgress, [0, 0.5, 1], [0, 1, 0.25]);
 
             return (
               <div
-                key={index}
+                key={i}
                 style={{
-                  opacity: cardOpacity,
-                  transform: `translateY(${cardY}px) scale(${cardScale * pulse}) rotate(${cardRotation}deg)`,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 24,
+                  opacity: citationOpacity,
+                  transform: `translateX(${citationX}px)`,
                 }}
               >
-                <div
+                <span
                   style={{
-                    backgroundColor: "#ffffff",
-                    borderRadius: 32,
-                    padding: "50px 60px",
-                    boxShadow: `0 25px 80px -20px ${problem.color}40, 0 10px 30px -10px rgba(0,0,0,0.1)`,
-                    border: `2px solid ${problem.color}20`,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 24,
-                    minWidth: 380,
-                    position: "relative",
-                    overflow: "hidden",
+                    fontSize: 64,
+                    fontWeight: 700,
+                    color: "#f97316",
+                    fontFamily: "monospace",
                   }}
                 >
-                  {/* Colored accent bar at top */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: 6,
-                      background: `linear-gradient(90deg, ${problem.color}, ${problem.color}80)`,
-                    }}
-                  />
-
-                  {/* Icon with colored background */}
-                  <div
-                    style={{
-                      width: 100,
-                      height: 100,
-                      borderRadius: 24,
-                      backgroundColor: problem.bgColor,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      fontSize: 48,
-                    }}
-                  >
-                    {problem.icon}
-                  </div>
-
-                  {/* Text */}
-                  <div
-                    style={{
-                      textAlign: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 42,
-                        fontWeight: 700,
-                        color: problem.color,
-                        marginBottom: 8,
-                      }}
-                    >
-                      {problem.text}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 26,
-                        color: "#6b7280",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {problem.subtext}
-                    </div>
-                  </div>
-
-                  {/* X mark */}
-                  <div
-                    style={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: "50%",
-                      backgroundColor: `${problem.color}15`,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      color: problem.color,
-                      fontSize: 28,
-                      fontWeight: 700,
-                    }}
-                  >
-                    ✕
-                  </div>
-                </div>
+                  {citation}
+                </span>
+                {/* Broken/fading line */}
+                <div
+                  style={{
+                    width: lineWidth,
+                    height: 6,
+                    background: `linear-gradient(90deg, #f97316 0%, #fdba74 50%, transparent 100%)`,
+                    opacity: lineOpacity,
+                    borderRadius: 3,
+                  }}
+                />
+                {/* Dead end indicator */}
+                <div
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: "50%",
+                    border: "4px solid #d1d5db",
+                    opacity: lineOpacity * 0.8,
+                  }}
+                />
               </div>
             );
           })}
         </div>
       </div>
+    </AbsoluteFill>
+  );
+};
+
+// Problem 3: No Implementation - Visual of empty terminal/code void
+const NoImplementation: React.FC<{ startFrame: number }> = ({ startFrame }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const localFrame = frame - startFrame;
+
+  if (localFrame < 0) return null;
+
+  const textProgress = spring({
+    frame: localFrame - 5,
+    fps,
+    config: { damping: 12, stiffness: 80 },
+  });
+
+  const textOpacity = interpolate(textProgress, [0, 1], [0, 1]);
+  const textY = interpolate(textProgress, [0, 1], [60, 0]);
+
+  // Terminal with just blinking cursor
+  const cursorBlink = Math.floor(localFrame / 12) % 2 === 0;
+
+  // Code lines that are grayed out / impossible to reach
+  const codeLines = [
+    "def implement(paper):",
+    "    # How do I even start?",
+    "    # Where's the code?",
+    "    pass",
+    "",
+    "# No implementation available",
+    "# Good luck figuring it out...",
+  ];
+
+  const terminalProgress = spring({
+    frame: localFrame - 10,
+    fps,
+    config: { damping: 12, stiffness: 60 },
+  });
+  const terminalOpacity = interpolate(terminalProgress, [0, 1], [0, 1]);
+  const terminalScale = interpolate(terminalProgress, [0, 1], [0.85, 1]);
+
+  // Exit fade
+  const exitOpacity = interpolate(localFrame, [32, 40], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <AbsoluteFill
+      style={{
+        backgroundColor: "#fafafa",
+        justifyContent: "center",
+        alignItems: "center",
+        opacity: exitOpacity,
+      }}
+    >
+      {/* Centered container for text + visual */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 100,
+        }}
+      >
+        {/* Text */}
+        <div
+          style={{
+            opacity: textOpacity,
+            transform: `translateY(${textY}px)`,
+          }}
+        >
+          <h1
+            style={{
+              fontSize: 160,
+              fontWeight: 800,
+              color: "#1a1a1a",
+              letterSpacing: "-0.04em",
+              lineHeight: 1,
+              margin: 0,
+            }}
+          >
+            No
+            <br />
+            <span style={{ color: "#eab308" }}>implementation.</span>
+          </h1>
+        </div>
+
+        {/* Visual: Empty/grayed terminal - BIGGER */}
+        <div
+          style={{
+            opacity: terminalOpacity,
+            transform: `scale(${terminalScale})`,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#1e293b",
+              borderRadius: 24,
+              padding: 0,
+              width: 900,
+              boxShadow: "0 50px 100px rgba(0,0,0,0.3)",
+              overflow: "hidden",
+            }}
+          >
+            {/* Terminal header */}
+            <div
+              style={{
+                height: 60,
+                backgroundColor: "#0f172a",
+                display: "flex",
+                alignItems: "center",
+                padding: "0 24px",
+                gap: 12,
+              }}
+            >
+              <div style={{ width: 18, height: 18, borderRadius: "50%", backgroundColor: "#ef4444" }} />
+              <div style={{ width: 18, height: 18, borderRadius: "50%", backgroundColor: "#f59e0b" }} />
+              <div style={{ width: 18, height: 18, borderRadius: "50%", backgroundColor: "#22c55e" }} />
+              <span style={{ marginLeft: 20, color: "#64748b", fontSize: 22 }}>terminal</span>
+            </div>
+
+            {/* Terminal content */}
+            <div
+              style={{
+                padding: "35px 40px",
+                fontFamily: "monospace",
+                fontSize: 30,
+              }}
+            >
+              {codeLines.map((line, i) => {
+                const lineProgress = spring({
+                  frame: localFrame - 12 - i * 3,
+                  fps,
+                  config: { damping: 15, stiffness: 120 },
+                });
+                const lineOpacity = interpolate(lineProgress, [0, 1], [0, 0.5]);
+
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      color: line.startsWith("#") ? "#64748b" : "#94a3b8",
+                      opacity: lineOpacity,
+                      height: 42,
+                    }}
+                  >
+                    {line}
+                  </div>
+                );
+              })}
+
+              {/* Blinking cursor */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: 30,
+                }}
+              >
+                <span style={{ color: "#64748b", fontSize: 30 }}>$</span>
+                <div
+                  style={{
+                    width: 18,
+                    height: 36,
+                    backgroundColor: cursorBlink ? "#eab308" : "transparent",
+                    marginLeft: 12,
+                    borderRadius: 2,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+export const ProblemStatement: React.FC = () => {
+  // Each problem gets ~40 frames (1.3 seconds)
+  // Total: 120 frames
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: "#fafafa" }}>
+      {/* Problem 1: Dense Papers (frames 0-40) */}
+      <DensePapers startFrame={0} />
+
+      {/* Problem 2: Dead-end Citations (frames 40-80) */}
+      <DeadEndCitations startFrame={40} />
+
+      {/* Problem 3: No Implementation (frames 80-120) */}
+      <NoImplementation startFrame={80} />
     </AbsoluteFill>
   );
 };
