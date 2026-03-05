@@ -11,21 +11,29 @@ export const Tagline: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Words appearing with energy - STAGGERED
-  const word1 = spring({ frame: frame - 8, fps, config: { damping: 10, stiffness: 80 } });
-  const word2 = spring({ frame: frame - 18, fps, config: { damping: 10, stiffness: 80 } });
-  const word3 = spring({ frame: frame - 28, fps, config: { damping: 10, stiffness: 80 } });
+  // Words appearing with energy - FASTER, MORE DRAMATIC
+  const word1 = spring({ frame: frame - 5, fps, config: { damping: 8, stiffness: 120 } });
+  const word2 = spring({ frame: frame - 15, fps, config: { damping: 8, stiffness: 120 } });
+  const word3 = spring({ frame: frame - 25, fps, config: { damping: 8, stiffness: 120 } });
 
-  // Underline animation
+  // Underline animation - FASTER
   const underlineProgress = spring({
-    frame: frame - 40,
+    frame: frame - 35,
     fps,
-    config: { damping: 15, stiffness: 80 },
+    config: { damping: 12, stiffness: 100 },
   });
   const underlineWidth = interpolate(underlineProgress, [0, 1], [0, 100]);
 
+  // Pulse effect on final word
+  const pulse = Math.sin(frame * 0.12) * 0.02 + 1;
+
   // Subtle animated gradient background
-  const gradientAngle = frame * 0.3;
+  const gradientAngle = frame * 0.4;
+
+  // Glow intensity
+  const glowIntensity = interpolate(frame, [0, 50], [0, 1], {
+    extrapolateRight: "clamp",
+  });
 
   const words = [
     { text: "Research,", progress: word1, gradient: false },
@@ -50,15 +58,16 @@ export const Tagline: React.FC = () => {
         overflow: "visible",
       }}
     >
-      <FloatingShapes colors={["#fde68a", "#d1fae5", "#fed7aa", "#fce7f3"]} count={8} speed={0.4} />
+      <FloatingShapes colors={["#fde68a", "#d1fae5", "#fed7aa", "#fce7f3"]} count={10} speed={0.5} />
 
-      {/* Subtle radial gradient */}
+      {/* Central glow */}
       <div
         style={{
           position: "absolute",
           width: "100%",
           height: "100%",
-          background: "radial-gradient(circle at 50% 50%, rgba(245,158,11,0.1) 0%, transparent 50%)",
+          background: "radial-gradient(circle at 50% 50%, rgba(245,158,11,0.15) 0%, transparent 50%)",
+          opacity: glowIntensity,
         }}
       />
 
@@ -72,7 +81,7 @@ export const Tagline: React.FC = () => {
           overflow: "visible",
         }}
       >
-        {/* Tagline - LIGHT MODE - with proper spacing */}
+        {/* Tagline - BIGGER, BOLDER */}
         <div
           style={{
             display: "flex",
@@ -82,24 +91,25 @@ export const Tagline: React.FC = () => {
           }}
         >
           {words.map((word, index) => {
-            const y = interpolate(word.progress, [0, 1], [100, 0]);
+            const y = interpolate(word.progress, [0, 1], [120, 0]);
             const opacity = interpolate(word.progress, [0, 1], [0, 1]);
-            const scale = interpolate(word.progress, [0, 1], [0.85, 1]);
+            const scale = interpolate(word.progress, [0, 1], [0.8, 1]);
+            const finalScale = word.underline ? scale * pulse : scale;
 
             return (
               <div
                 key={index}
                 style={{
                   position: "relative",
-                  transform: `translateY(${y}px) scale(${scale})`,
+                  transform: `translateY(${y}px) scale(${finalScale})`,
                   opacity,
                   overflow: "visible",
                 }}
               >
                 <span
                   style={{
-                    fontSize: 180,
-                    fontWeight: word.italic ? 400 : 700,
+                    fontSize: 200,
+                    fontWeight: word.italic ? 400 : 800,
                     fontStyle: word.italic ? "italic" : "normal",
                     color: word.gradient ? undefined : "#1a1a1a",
                     background: word.gradient
@@ -110,6 +120,9 @@ export const Tagline: React.FC = () => {
                     letterSpacing: "-0.02em",
                     display: "inline-block",
                     padding: "0 10px",
+                    textShadow: word.underline && glowIntensity > 0.5
+                      ? "0 0 60px rgba(245,158,11,0.3)"
+                      : "none",
                   }}
                 >
                   {word.text}
@@ -118,12 +131,13 @@ export const Tagline: React.FC = () => {
                   <div
                     style={{
                       position: "absolute",
-                      bottom: 20,
+                      bottom: 15,
                       left: 10,
-                      height: 14,
+                      height: 16,
                       width: `${underlineWidth}%`,
                       background: "linear-gradient(90deg, #f59e0b, #10b981)",
-                      borderRadius: 7,
+                      borderRadius: 8,
+                      boxShadow: `0 0 ${20 * glowIntensity}px rgba(245,158,11,0.5)`,
                     }}
                   />
                 )}

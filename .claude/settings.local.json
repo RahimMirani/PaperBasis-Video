@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:www.paperbasis.com)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "WebFetch(domain:paperbasis.com)",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }
